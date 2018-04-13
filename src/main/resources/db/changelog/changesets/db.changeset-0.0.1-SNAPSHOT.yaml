@@ -1,0 +1,62 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: retriku
+    changes:
+      - sql: CREATE TYPE user_name AS VARCHAR(100)
+      - sql: CREATE TYPE todo_state AS ENUM ('new','open','closed')
+      - sql: CREATE TYPE close_reason AS ENUM ('done','abandoned')              
+      - createTable:
+          tableName: todo
+          columns:
+            - column:
+                name: id
+                type: int
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+                  nullable: false
+            - column:
+                name: task
+                type: text
+                constraints:
+                  nullable: false
+            - column:
+                name: task_state
+                type: todo_state
+                constraints:
+                  nullable: false
+            - column:
+                name: close_reason
+                type: close_reason
+            - column:
+                name: task_start
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: task_end
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created_by
+                type: user_name
+                constraints:
+                  nullable: false
+            - column:
+                name: updated
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: updated_by
+                type: user_name
+                constraints:
+                  nullable: false
+                  
