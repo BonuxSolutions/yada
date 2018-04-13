@@ -52,6 +52,16 @@ hs_err_pid*
 /.teamcity/*.iml
 /.teamcity/target
 
+# Eclipse
+# -------
+*.classpath
+*.project
+*.settings
+/bin
+/subprojects/*/bin
+atlassian-ide-plugin.xml
+.metadata/
+
 # Logs
 # ----
 /*.log
