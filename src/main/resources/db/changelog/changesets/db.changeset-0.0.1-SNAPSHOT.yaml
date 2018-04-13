@@ -3,8 +3,8 @@ databaseChangeLog:
     id: 1
     author: retriku
     changes:
-      - sql: CREATE TYPE todo_state AS ENUM ('new','open','closed')
-      - sql: CREATE TYPE close_reason AS ENUM ('done','abandoned')              
+      - sql: CREATE TYPE todo_state AS ENUM ('NEW','OPEN','CLOSED')
+      - sql: CREATE TYPE close_reason AS ENUM ('DONE','ABANDONED')
       - createTable:
           tableName: todo
           columns:

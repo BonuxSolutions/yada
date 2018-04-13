@@ -1,0 +1,10 @@
+spring:
+    security:
+        user:
+            name: admin
+            password: admin
+    datasource:
+        username: yada
+        password: yada
+        initialization-mode: always
+        url: "jdbc:postgresql:yada"
