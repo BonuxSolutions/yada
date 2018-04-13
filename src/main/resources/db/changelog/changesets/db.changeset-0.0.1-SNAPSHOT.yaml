@@ -3,7 +3,6 @@ databaseChangeLog:
     id: 1
     author: retriku
     changes:
-      - sql: CREATE TYPE user_name AS VARCHAR(100)
       - sql: CREATE TYPE todo_state AS ENUM ('new','open','closed')
       - sql: CREATE TYPE close_reason AS ENUM ('done','abandoned')              
       - createTable:
@@ -46,7 +45,7 @@ databaseChangeLog:
                   nullable: false
             - column:
                 name: created_by
-                type: user_name
+                type: varchar(100)
                 constraints:
                   nullable: false
             - column:
@@ -56,7 +55,7 @@ databaseChangeLog:
                   nullable: false
             - column:
                 name: updated_by
-                type: user_name
+                type: varchar(100)
                 constraints:
                   nullable: false
                   
