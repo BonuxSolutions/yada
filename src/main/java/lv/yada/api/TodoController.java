@@ -1,64 +1,69 @@
 package lv.yada.api;
 
+import lv.yada.model.Todo;
 import lv.yada.repos.TodoRepo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import javax.sql.DataSource;
 import java.net.URI;
-import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/yada")
-public final class TodoController {
+class TodoController {
 
     private static Logger logger = LoggerFactory.getLogger(TodoController.class);
-
-    @Autowired
-    DataSource dataSource;
 
     @Autowired
     private TodoRepo todoRepo;
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public void handle(Exception e) {
+    void handle(Exception e) {
         logger.error(e.getMessage(), e);
     }
 
-    @RequestMapping(
+    @GetMapping(
             path = "/todos",
-            method = RequestMethod.GET,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    public Collection<Todo> getSome() {
+    @Secured("ADMIN")
+    HttpEntity<?> getSome() {
         logger.info("getSome");
-        return todoRepo
-                .findAll(PageRequest.of(1, 20))
-                .map(todo -> Todo.builder().fromModel(todo).build())
-                .getContent();
+        List<?> todos = todoRepo
+                .findAll()
+                .stream()
+                .peek(todo -> todo.add(linkTo(methodOn(TodoController.class).getSome()).withSelfRel()))
+                .collect(Collectors.toList());
+
+        return new ResponseEntity<>(todos, HttpStatus.OK);
     }
 
-    @RequestMapping(
+    @PostMapping(
             path = "/todos",
-            method = RequestMethod.POST,
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    public ResponseEntity<?> create(@RequestBody Todo todo,
-                                    Authentication authentication) {
+    @Secured("ADMIN")
+    HttpEntity<?> create(@RequestBody Todo todo) {
         logger.info("create {}", todo);
+        Todo todo1 = todo.createdBy("authentication.getName()");
         URI location = ServletUriComponentsBuilder
-                .fromCurrentRequest().path("/{id}")
-                .buildAndExpand(todoRepo.save(todo.createBy(authentication.getName())))
+                .fromCurrentRequest()
+                .buildAndExpand(todoRepo.save(todo1))
                 .toUri();
         return ResponseEntity.created(location).build();
     }

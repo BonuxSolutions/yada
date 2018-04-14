@@ -2,12 +2,13 @@ package lv.yada.model;
 
 import lv.yada.types.CloseReason;
 import lv.yada.types.TaskState;
+import org.springframework.hateoas.ResourceSupport;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-public final class Todo {
+public final class Todo extends ResourceSupport {
     @Id
     @GeneratedValue
     @Column
@@ -41,4 +42,17 @@ public final class Todo {
 
     @Column
     public String updatedBy;
+
+    public Todo createdBy(String user) {
+        this.createdBy = user;
+        this.created = LocalDateTime.now();
+        return updatedBy(user);
+    }
+
+    public Todo updatedBy(String user) {
+        this.updatedBy = user;
+        this.updated = LocalDateTime.now();
+        return this;
+    }
+
 }
