@@ -40,7 +40,7 @@ class TodoController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    @Secured("ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     HttpEntity<?> getSome() {
         logger.info("getSome");
         List<?> todos = todoRepo
@@ -57,7 +57,7 @@ class TodoController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Secured("ADMIN")
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     HttpEntity<?> create(@RequestBody Todo todo) {
         logger.info("create {}", todo);
         Todo todo1 = todo.createdBy("authentication.getName()");
