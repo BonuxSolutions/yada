@@ -60,7 +60,7 @@ class TodoController {
     @Secured({"ROLE_ADMIN", "ROLE_USER"})
     HttpEntity<?> create(@RequestBody Todo todo) {
         logger.info("create {}", todo);
-        Todo todo1 = todo.createdBy("authentication.getName()");
+        Todo todo1 = todo.newItemBy("authentication.getName()");
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .buildAndExpand(todoRepo.save(todo1))
