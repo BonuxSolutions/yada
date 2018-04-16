@@ -20,6 +20,8 @@ public interface YadaServices {
 
     Stream<Todo> get();
 
+    Optional<Todo> get(Integer id);
+
     void delete(Integer id);
 }
 
@@ -52,6 +54,11 @@ class YadaServicesImpl
                 .fromCurrentRequest()
                 .buildAndExpand(todoRepo.save(todo1))
                 .toUri();
+    }
+
+    @Override
+    public Optional<Todo> get(Integer id) {
+        return todoRepo.findById(id);
     }
 
     @Override

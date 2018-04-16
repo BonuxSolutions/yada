@@ -38,7 +38,7 @@ class TodoController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @Secured({"ADMIN", "USER"})
     HttpEntity<?> getSome() {
         logger.info("getSome");
 
@@ -49,12 +49,29 @@ class TodoController {
                         .collect(Collectors.toList()));
     }
 
+    @GetMapping(
+            path = "/todos/{id}",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    @ResponseBody
+    @Secured({"ADMIN", "USER"})
+    HttpEntity<?> getOne(@PathVariable("id") Integer id) {
+        logger.info("getOne {}", id);
+
+        return yadaServices
+                .get(id)
+                .map(todo -> {
+                    todo.add(linkTo(methodOn(TodoController.class).getSome()).slash(todo.id).withSelfRel());
+                    return ResponseEntity.ok(todo);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
     @PostMapping(
             path = "/todos",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
@@ -63,10 +80,9 @@ class TodoController {
 
     @PutMapping(
             path = "/todos/{id}",
-            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
-            produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Secured({"ROLE_ADMIN", "ROLE_USER"})
+    @Secured({"ADMIN", "USER"})
     HttpEntity<?> update(@RequestBody Todo.UpdateTodo updateTodo,
                          @PathVariable("id") Integer id,
                          Authentication authentication) {
@@ -81,7 +97,7 @@ class TodoController {
             path = "/todos/{id}")
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
-    @Secured("ROLE_ADMIN")
+    @Secured("ADMIN")
     HttpEntity<?> delete(@PathVariable("id") Integer id) {
         logger.info("delete {}", id);
         yadaServices.delete(id);
