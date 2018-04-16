@@ -23,7 +23,7 @@ public final class Todo extends ResourceSupport {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_id_seq")
     @SequenceGenerator(name = "todo_id_seq", sequenceName = "todo_id_seq")
     @Column
-    private Integer id;
+    public Integer id;
 
     @Column
     public String task;

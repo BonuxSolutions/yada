@@ -13,6 +13,11 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.stream.Collectors;
+
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/yada")
 class TodoController {
@@ -37,15 +42,19 @@ class TodoController {
     HttpEntity<?> getSome() {
         logger.info("getSome");
 
-        return new ResponseEntity<>(yadaServices.get(), HttpStatus.OK);
+        return ResponseEntity.ok(
+                yadaServices
+                        .get()
+                        .peek(todo -> todo.add(linkTo(methodOn(TodoController.class).getSome()).slash(todo.id).withSelfRel()))
+                        .collect(Collectors.toList()));
     }
 
     @PostMapping(
             path = "/todos",
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    @ResponseStatus(HttpStatus.ACCEPTED)
-    @Secured({"ROLE_ADMIN"})
+    @ResponseStatus(HttpStatus.CREATED)
+    @Secured("ROLE_ADMIN")
     HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
@@ -63,8 +72,20 @@ class TodoController {
                          Authentication authentication) {
         logger.info("update {}", updateTodo);
         return yadaServices.update(id, updateTodo, authentication.getName())
-                .map(r -> ResponseEntity.created(r).build())
+                .map(r -> ResponseEntity.accepted().body(r))
                 .orElseGet(() -> ResponseEntity.notFound().build());
 
     }
+
+    @DeleteMapping(
+            path = "/todos/{id}")
+    @ResponseStatus(HttpStatus.ACCEPTED)
+    @ResponseBody
+    @Secured("ROLE_ADMIN")
+    HttpEntity<?> delete(@PathVariable("id") Integer id) {
+        logger.info("delete {}", id);
+        yadaServices.delete(id);
+        return ResponseEntity.accepted().build();
+    }
+
 }

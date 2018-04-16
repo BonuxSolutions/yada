@@ -7,12 +7,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
-
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
-import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+import java.util.stream.Stream;
 
 public interface YadaServices {
     Optional<URI> update(Integer id,
@@ -22,7 +18,9 @@ public interface YadaServices {
     URI create(Todo.CreateTodo createTodo,
                String userName);
 
-    List<Todo> get();
+    Stream<Todo> get();
+
+    void delete(Integer id);
 }
 
 @Service
@@ -30,6 +28,11 @@ class YadaServicesImpl
         implements YadaServices {
     @Autowired
     private TodoRepo todoRepo;
+
+    @Override
+    public void delete(Integer id) {
+        todoRepo.deleteById(id);
+    }
 
     @Override
     public Optional<URI> update(Integer id,
@@ -52,9 +55,7 @@ class YadaServicesImpl
     }
 
     @Override
-    public List<Todo> get() {
-        return todoRepo.findAll().stream()
-                .peek(todo -> todo.add(linkTo(methodOn(YadaServices.class).get()).withSelfRel()))
-                .collect(Collectors.toList());
+    public Stream<Todo> get() {
+        return todoRepo.findAll().stream();
     }
 }
