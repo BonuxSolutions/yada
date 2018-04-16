@@ -40,6 +40,7 @@ class YadaSecurityConfig
                 .httpBasic()
                 .and().authorizeRequests()
                     .antMatchers(HttpMethod.GET, "/yada/todos").hasAnyAuthority(USER.name(), ADMIN.name())
+                    .antMatchers(HttpMethod.PUT, "/yada/todos").hasAnyAuthority(USER.name(), ADMIN.name())
                     .antMatchers(HttpMethod.POST, "/yada/todos").hasAuthority(ADMIN.name());
     }
 }
