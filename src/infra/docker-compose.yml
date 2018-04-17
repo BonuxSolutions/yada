@@ -3,19 +3,6 @@ version: '3'
 services:
   db:
     image: postgres:alpine
-#    environment:
-#      POSTGRES_PASSWORD: yada
-#      POSTGRES_USER: yada
-#      POSTGRES_DB: yada
-#    ports:
-#      - "5432:5432"
-  adminer:
-    image: adminer
-    restart: always
-    ports:
-      - "8081:8080"
-    links:
-      - db:database
   yada:
     image: openjdk:8-jre-alpine
     volumes:
