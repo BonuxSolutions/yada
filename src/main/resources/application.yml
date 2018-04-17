@@ -1,0 +1,14 @@
+spring:
+    datasource:
+        username: yada
+        password: yada
+        initialization-mode: always
+        url: "jdbc:postgresql://localhost:5432/yada"
+    jpa:
+      show-sql: true
+      database: POSTGRESQL
+      properties:
+        hibernate:
+          temp:
+            use_jdbc_metadata_defaults: false
+      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
