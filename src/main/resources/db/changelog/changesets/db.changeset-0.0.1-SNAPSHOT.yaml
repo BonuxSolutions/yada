@@ -1,0 +1,90 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: retriku
+    changes:
+      - sql: CREATE TYPE todo_state AS ENUM ('NEW','OPEN','CLOSED')
+      - sql: CREATE TYPE close_reason AS ENUM ('DONE','ABANDONED')
+      - createTable:
+          tableName: todo
+          columns:
+            - column:
+                name: id
+                type: integer
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+            - column:
+                name: task
+                type: text
+                constraints:
+                  nullable: false
+            - column:
+                name: task_state
+                type: todo_state
+                constraints:
+                  nullable: false
+            - column:
+                name: close_reason
+                type: close_reason
+            - column:
+                name: task_start
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: task_end
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created_by
+                type: varchar(100)
+                constraints:
+                  nullable: false
+            - column:
+                name: updated
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: updated_by
+                type: varchar(100)
+                constraints:
+                  nullable: false
+      - createTable:
+          tableName: users
+          columns:
+            - column:
+                name: username
+                type: varchar(50)
+                constraints:
+                  primaryKey: true
+            - column:
+                name: password
+                type: varchar(100)
+                constraints:
+                  nullable: false
+            - column:
+                name: enabled
+                type: boolean
+                constraints:
+                  nullable: false
+      - createTable:
+          tableName: authorities
+          columns:
+            - column:
+                name: username
+                type: varchar(50)
+            - column:
+                name: authority
+                type: varchar(10)
+      - sql: INSERT INTO users(username, password, enabled) VALUES ('admin', '{bcrypt}$2a$10$MnZDwbB4dpc1jV3vnReEOO2jUMRfOCr/2zgo5vrLsOSTWe.EGQc1S', true)
+      - sql: INSERT INTO users(username, password, enabled) VALUES ('user', '{bcrypt}$2a$10$d1UcNp6F1azkyfgeLdq3ueQyVOrDNxgvSAXdv57RcHjgcMftiDPhu', true)
+      - sql: INSERT INTO authorities(username, authority) VALUES ('admin', 'ADMIN')
+      - sql: INSERT INTO authorities(username, authority) VALUES ('user', 'USER')

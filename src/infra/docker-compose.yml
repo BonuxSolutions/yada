@@ -1,8 +1,27 @@
 version: '3'
 
 services:
+  db:
+    image: postgres:alpine
+#    environment:
+#      POSTGRES_PASSWORD: yada
+#      POSTGRES_USER: yada
+#      POSTGRES_DB: yada
+#    ports:
+#      - "5432:5432"
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - "8081:8080"
+    links:
+      - db:database
   yada:
     image: openjdk:8-jre-alpine
     volumes:
-      - "./uberjar:/tmp"
-    command: java -jar /tmp/uberjar-all.jar
+      - "../../build/libs:/tmp"
+    command: java -jar /tmp/yada-0.0.1-SNAPSHOT.jar
+    ports:
+      - "8080:8080"
+    links:
+      - db:database
