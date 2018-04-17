@@ -1,0 +1,8 @@
+version: '3'
+
+services:
+  yada:
+    image: openjdk:8-jre-alpine
+    volumes:
+      - "./uberjar:/tmp"
+    command: java -jar /tmp/uberjar-all.jar
