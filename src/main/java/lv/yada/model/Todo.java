@@ -39,9 +39,11 @@ public final class Todo extends ResourceSupport {
     public CloseReason closeReason;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime taskStart;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime taskEnd;
 
     @Column

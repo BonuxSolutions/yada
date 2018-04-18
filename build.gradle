@@ -1,12 +1,17 @@
 buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
+        dockerPluginVersion = '0.13.0'
+        dockerComposePluginVersion = '0.7.1'
     }
     repositories {
+        jcenter()
         mavenCentral()
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
+        classpath "com.avast.gradle:gradle-docker-compose-plugin:${dockerComposePluginVersion}"
     }
 }
 
@@ -19,6 +24,8 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.palantir.docker'
+apply plugin: 'docker-compose'
 
 group = 'lv.yada'
 version = '0.0.1-SNAPSHOT'
@@ -54,12 +61,14 @@ dependencies {
     testCompile('org.springframework.security:spring-security-test')
 }
 
-jar {
-    manifest {
-        attributes(
-                'Class-Path': configurations.compile.collect { it.getName() }.join(' '),
-                'Main-Class': 'lv.yada.YadaApplication'
-        )
-    }
-    destinationDir = new File("src/infra/jar")
+docker {
+    dockerfile = new File("./src/infra/")
+    name "${project.group}/${jar.baseName}"
+    files jar.archivePath
+    buildArgs(['JAR_FILE' : "${jar.archiveName}",
+               'JAVA_OPTS': "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
+}
+
+dockerCompose {
+    useComposeFiles = ['src/infra/docker-compose.yml']
 }

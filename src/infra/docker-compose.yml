@@ -4,11 +4,9 @@ services:
   db:
     image: postgres:alpine
   yada:
-    image: openjdk:8-jre-alpine
-    volumes:
-      - "../../build/libs:/tmp"
-    command: java -jar /tmp/yada-0.0.1-SNAPSHOT.jar
+    image: lv.yada/yada
     ports:
       - "8080:8080"
+      - "9009:9009"
     links:
       - db:database
