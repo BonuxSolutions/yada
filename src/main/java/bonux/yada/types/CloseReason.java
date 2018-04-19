@@ -1,4 +1,4 @@
-package lv.yada.types;
+package bonux.yada.types;
 
 public enum CloseReason {
     DONE, ABANDONED

@@ -1,9 +1,8 @@
 spring:
     datasource:
-        username: yada
-        password: yada
+        username: postgres
         initialization-mode: always
-        url: "jdbc:postgresql://localhost:5432/yada"
+        url: "jdbc:postgresql://database:5432/postgres"
     jpa:
       show-sql: true
       database: POSTGRESQL

@@ -1,4 +1,4 @@
-package lv.yada.security;
+package bonux.yada.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -7,7 +7,6 @@ import org.springframework.http.HttpMethod;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl;
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Service;
 
 import javax.sql.DataSource;
 
-import static lv.yada.security.Roles.ADMIN;
-import static lv.yada.security.Roles.USER;
+import static bonux.yada.security.Roles.ADMIN;
+import static bonux.yada.security.Roles.USER;
 
 @Service
 class YadaSecurityConfig

@@ -1,8 +1,8 @@
-package lv.yada.model;
+package bonux.yada.model;
 
+import bonux.yada.types.CloseReason;
 import com.fasterxml.jackson.annotation.JsonFormat;
-import lv.yada.types.CloseReason;
-import lv.yada.types.TaskState;
+import bonux.yada.types.TaskState;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 import org.springframework.core.style.ToStringCreator;
@@ -11,7 +11,7 @@ import org.springframework.hateoas.ResourceSupport;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static lv.yada.types.TaskState.NEW;
+import static bonux.yada.types.TaskState.NEW;
 
 @Entity
 @TypeDef(
@@ -39,9 +39,11 @@ public final class Todo extends ResourceSupport {
     public CloseReason closeReason;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime taskStart;
 
     @Column
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public LocalDateTime taskEnd;
 
     @Column
