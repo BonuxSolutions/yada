@@ -1,4 +1,4 @@
-package lv.yada;
+package bonux.yada;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

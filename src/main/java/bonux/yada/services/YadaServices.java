@@ -1,7 +1,7 @@
-package lv.yada.services;
+package bonux.yada.services;
 
-import lv.yada.model.Todo;
-import lv.yada.repos.TodoRepo;
+import bonux.yada.model.Todo;
+import bonux.yada.repos.TodoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;

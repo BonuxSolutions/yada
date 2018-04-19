@@ -1,12 +1,14 @@
 buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
+        dockerPluginVersion = '0.13.0'
     }
     repositories {
         mavenCentral()
     }
     dependencies {
-        classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
     }
 }
 
@@ -19,8 +21,9 @@ apply plugin: 'java'
 apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'com.palantir.docker'
 
-group = 'lv.yada'
+group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
 sourceCompatibility = 1.8
@@ -29,7 +32,6 @@ targetCompatibility = 1.8
 repositories {
     mavenCentral()
 }
-
 
 dependencies {
     compile('org.springframework.boot:spring-boot-starter-actuator')
@@ -54,3 +56,13 @@ dependencies {
     testCompile('org.springframework.boot:spring-boot-starter-test')
     testCompile('org.springframework.security:spring-security-test')
 }
+
+docker {
+    dockerfile = file("src/infra/Dockerfile")
+    name "${project.group}/${jar.baseName}"
+    files(jar.archivePath, file("src/infra/run.sh"))
+    noCache true
+    buildArgs(['JAR_FILE' : "${jar.archiveName}",
+               'JAVA_OPTS': "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
+}
+

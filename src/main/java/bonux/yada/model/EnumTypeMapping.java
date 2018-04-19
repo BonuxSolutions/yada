@@ -1,4 +1,4 @@
-package lv.yada.model;
+package bonux.yada.model;
 
 import org.hibernate.HibernateException;
 import org.hibernate.engine.spi.SharedSessionContractImplementor;
