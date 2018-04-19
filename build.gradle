@@ -57,7 +57,7 @@ dependencies {
     testCompile('org.springframework.security:spring-security-test')
 }
 
-def activeProfiles = project.getProperties().get("spring.profiles.active")
+String activeProfiles = project.getProperties().get("spring.profiles.active")
 
 bootRun {
     if (activeProfiles != null) {
@@ -72,13 +72,14 @@ docker {
     name "${project.group}/${jar.baseName}"
     files(jar.archivePath, file("src/infra/run.sh"))
     noCache true
-    if ("prod" == activeProfiles) {
-        buildArgs(['JAR_FILE'              : "${jar.archiveName}",
-                   'spring_profiles_active': "${activeProfiles}"])
-    } else {
-        buildArgs(['JAR_FILE'              : "${jar.archiveName}",
-                   'spring_profiles_active': "${activeProfiles}",
-                   'JAVA_OPTS'             : "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
+
+    def javaOpts = "-Dspring.profiles.active=${activeProfiles}"
+
+    if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
+        javaOpts += " -agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"
     }
+
+    buildArgs(['JAR_FILE' : "${jar.archiveName}",
+               'JAVA_OPTS': javaOpts])
 }
 

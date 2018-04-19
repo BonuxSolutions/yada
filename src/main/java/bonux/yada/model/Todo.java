@@ -14,10 +14,10 @@ import java.time.LocalDateTime;
 import static bonux.yada.types.TaskState.NEW;
 
 @Entity
+@SequenceGenerator(name = "todo_id_seq", sequenceName = "todo_id_seq", allocationSize = 1)
 public final class Todo extends ResourceSupport {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_id_seq")
-    @SequenceGenerator(name = "todo_id_seq", sequenceName = "todo_id_seq")
     @Column
     public Integer id;
 

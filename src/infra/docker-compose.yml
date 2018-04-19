@@ -16,3 +16,8 @@ services:
       - "9009:9009"
     links:
       - db:database
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8081:8080
