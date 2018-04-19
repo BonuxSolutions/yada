@@ -3,8 +3,11 @@ databaseChangeLog:
     id: 1
     author: retriku
     changes:
-      - sql: CREATE TYPE todo_state AS ENUM ('NEW','OPEN','CLOSED')
-      - sql: CREATE TYPE close_reason AS ENUM ('DONE','ABANDONED')
+      - createSequence:
+          sequenceName: todo_id_seq
+          startValue: 1
+          cycle: true
+          incrementBy: 1
       - createTable:
           tableName: todo
           columns:
@@ -21,12 +24,13 @@ databaseChangeLog:
                   nullable: false
             - column:
                 name: task_state
-                type: todo_state
+                type: varchar(10)
                 constraints:
+                  check:
                   nullable: false
             - column:
                 name: close_reason
-                type: close_reason
+                type: varchar(10)
             - column:
                 name: task_start
                 type: datetime
@@ -84,6 +88,8 @@ databaseChangeLog:
             - column:
                 name: authority
                 type: varchar(10)
+      - sql: ALTER TABLE todo ADD CONSTRAINT task_state_c CHECK (task_state IN ('NEW','OPEN','CLOSED'))
+      - sql: ALTER TABLE todo ADD CONSTRAINT close_reason_c CHECK (close_reason IS NULL OR close_reason IN ('DONE','ABANDONED'))
       - sql: INSERT INTO users(username, password, enabled) VALUES ('admin', '{bcrypt}$2a$10$MnZDwbB4dpc1jV3vnReEOO2jUMRfOCr/2zgo5vrLsOSTWe.EGQc1S', true)
       - sql: INSERT INTO users(username, password, enabled) VALUES ('user', '{bcrypt}$2a$10$d1UcNp6F1azkyfgeLdq3ueQyVOrDNxgvSAXdv57RcHjgcMftiDPhu', true)
       - sql: INSERT INTO authorities(username, authority) VALUES ('admin', 'ADMIN')

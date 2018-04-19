@@ -57,12 +57,28 @@ dependencies {
     testCompile('org.springframework.security:spring-security-test')
 }
 
+def activeProfiles = project.getProperties().get("spring.profiles.active")
+
+bootRun {
+    if (activeProfiles != null) {
+        systemProperties = [
+                'spring.profiles.active': activeProfiles
+        ]
+    }
+}
+
 docker {
     dockerfile = file("src/infra/Dockerfile")
     name "${project.group}/${jar.baseName}"
     files(jar.archivePath, file("src/infra/run.sh"))
     noCache true
-    buildArgs(['JAR_FILE' : "${jar.archiveName}",
-               'JAVA_OPTS': "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
+    if ("prod" == activeProfiles) {
+        buildArgs(['JAR_FILE'              : "${jar.archiveName}",
+                   'spring_profiles_active': "${activeProfiles}"])
+    } else {
+        buildArgs(['JAR_FILE'              : "${jar.archiveName}",
+                   'spring_profiles_active': "${activeProfiles}",
+                   'JAVA_OPTS'             : "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
+    }
 }
 

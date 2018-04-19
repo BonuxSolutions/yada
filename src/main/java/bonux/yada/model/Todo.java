@@ -14,10 +14,6 @@ import java.time.LocalDateTime;
 import static bonux.yada.types.TaskState.NEW;
 
 @Entity
-@TypeDef(
-        name = "enum_type",
-        typeClass = EnumTypeMapping.class
-)
 public final class Todo extends ResourceSupport {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "todo_id_seq")
@@ -30,12 +26,10 @@ public final class Todo extends ResourceSupport {
 
     @Column
     @Enumerated(EnumType.STRING)
-    @Type(type = "enum_type")
     public TaskState taskState;
 
     @Column
     @Enumerated(EnumType.STRING)
-    @Type(type = "enum_type")
     public CloseReason closeReason;
 
     @Column
