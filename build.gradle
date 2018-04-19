@@ -60,7 +60,7 @@ dependencies {
 docker {
     dockerfile = file("src/infra/Dockerfile")
     name "${project.group}/${jar.baseName}"
-    files jar.archivePath
+    files(jar.archivePath, file("src/infra/run.sh"))
     noCache true
     buildArgs(['JAR_FILE' : "${jar.archiveName}",
                'JAVA_OPTS': "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"])
