@@ -1,7 +1,7 @@
-package lv.yada.api;
+package bonux.yada.api;
 
-import lv.yada.model.Todo;
-import lv.yada.services.YadaServices;
+import bonux.yada.model.Todo;
+import bonux.yada.services.YadaServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

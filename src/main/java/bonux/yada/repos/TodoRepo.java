@@ -1,6 +1,6 @@
-package lv.yada.repos;
+package bonux.yada.repos;
 
-import lv.yada.model.Todo;
+import bonux.yada.model.Todo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

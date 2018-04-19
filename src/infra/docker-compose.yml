@@ -4,7 +4,7 @@ services:
   db:
     image: postgres:alpine
   yada:
-    image: lv.yada/yada
+    image: bonux.yada/yada
     ports:
       - "8080:8080"
       - "9009:9009"
