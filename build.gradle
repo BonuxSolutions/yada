@@ -2,13 +2,18 @@ buildscript {
     ext {
         springBootVersion = '2.0.1.RELEASE'
         dockerPluginVersion = '0.13.0'
+        sonarqubePluginVersion = '2.6.2'
     }
     repositories {
         mavenCentral()
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
     }
     dependencies {
         classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
         classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubePluginVersion}"
     }
 }
 
@@ -22,6 +27,9 @@ apply plugin: 'eclipse'
 apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: 'com.palantir.docker'
+apply plugin: 'checkstyle'
+apply plugin: 'pmd'
+apply plugin: "org.sonarqube"
 
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
@@ -83,3 +91,40 @@ docker {
                'JAVA_OPTS': javaOpts])
 }
 
+pmd {
+    ignoreFailures = true
+    sourceSets = [sourceSets.main]
+    reportsDir = file("$project.buildDir/reports/pmd")
+    ruleSets = [
+            'java-basic',
+            'java-braces',
+            'java-clone',
+            'java-codesize',
+            'java-comments',
+            'java-controversial',
+            'java-coupling',
+            'java-design',
+            'java-empty',
+            'java-finalizers',
+            'java-imports',
+            'java-optimizations',
+            'java-strictexception',
+            'java-strings',
+            'java-typeresolution',
+            'java-unnecessary',
+            'java-unusedcode'
+    ]
+}
+
+checkstyle {
+    ignoreFailures = true
+    configFile = file("${project.rootDir}/checkstyle.xml")
+
+    project.ext.checkstyleVersion = '8.9'
+    project.ext.sevntuChecksVersion = '1.29.0'
+
+    dependencies {
+        checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
+        checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
+    }
+}
