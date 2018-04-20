@@ -1,0 +1,13 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:alpine
+    restart: always
+  yada:
+    image: bonux.yada/yada
+    restart: always
+    ports:
+      - "8080:8080"
+    links:
+      - db:database
