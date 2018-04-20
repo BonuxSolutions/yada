@@ -1,11 +1,9 @@
 spring:
     datasource:
-        username: postgres
-        password: postgres
         initialization-mode: always
         url: "jdbc:postgresql://database:5432/postgres"
     jpa:
-      show-sql: true
+      show-sql: false
       database: POSTGRESQL
       properties:
         hibernate:
