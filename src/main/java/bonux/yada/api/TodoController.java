@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -75,7 +77,9 @@ class TodoController {
     HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
-        return ResponseEntity.created(yadaServices.create(createTodo, authentication.getName())).build();
+        return ResponseEntity
+                .created(toUri(yadaServices.create(createTodo, authentication.getName())))
+                .build();
     }
 
     @PutMapping(
@@ -87,10 +91,18 @@ class TodoController {
                          @PathVariable("id") Integer id,
                          Authentication authentication) {
         logger.info("update {}", updateTodo);
+
         return yadaServices.update(id, updateTodo, authentication.getName())
-                .map(r -> ResponseEntity.accepted().body(r))
+                .map(r -> ResponseEntity.accepted().body(toUri(r)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
 
+    }
+
+    private URI toUri(Todo r) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .buildAndExpand(r)
+                .toUri();
     }
 
     @DeleteMapping(
