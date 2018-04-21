@@ -71,3 +71,4 @@ atlassian-ide-plugin.xml
 
 !gradle-wrapper.jar
 !sonar-java-plugin-5.3.0.13828.jar
+/src/main/java/bonux/yada/tmp.jpage
