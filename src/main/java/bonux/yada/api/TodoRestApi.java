@@ -22,8 +22,7 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/yada")
-class TodoRestApi
-        implements TodoApi<HttpEntity<?>> {
+class TodoRestApi {
 
     private static Logger logger = LoggerFactory.getLogger(TodoRestApi.class);
 
@@ -42,8 +41,14 @@ class TodoRestApi
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Secured({"ADMIN", "USER"})
-    HttpEntity<?> getSomeCall() {
-        return getSome();
+    HttpEntity<?> getSome() {
+        logger.info("getSome");
+
+        return ResponseEntity.ok(
+                yadaServices
+                        .get()
+                        .peek(todo -> todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel()))
+                        .collect(Collectors.toList()));
     }
 
     @GetMapping(
@@ -52,8 +57,16 @@ class TodoRestApi
     @ResponseStatus(HttpStatus.OK)
     @ResponseBody
     @Secured({"ADMIN", "USER"})
-    HttpEntity<?> getOneCall(@PathVariable("id") Integer id) {
-        return getOne(id);
+    HttpEntity<?> getOne(@PathVariable("id") Integer id) {
+        logger.info("getOne {}", id);
+
+        return yadaServices
+                .get(id)
+                .map(todo -> {
+                    todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel());
+                    return ResponseEntity.ok(todo);
+                })
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PostMapping(
@@ -61,9 +74,12 @@ class TodoRestApi
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Secured("ADMIN")
-    HttpEntity<?> createCall(@RequestBody Todo.CreateTodo createTodo,
-                             Authentication authentication) {
-        return create(createTodo, authentication.getName());
+    HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
+                         Authentication authentication) {
+        logger.info("create {}", createTodo);
+        return ResponseEntity
+                .created(toUri(yadaServices.create(createTodo, authentication.getName())))
+                .build();
     }
 
     @PutMapping(
@@ -71,10 +87,14 @@ class TodoRestApi
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Secured({"ADMIN", "USER"})
-    HttpEntity<?> updateCall(@RequestBody Todo.UpdateTodo updateTodo,
-                             @PathVariable("id") Integer id,
-                             Authentication authentication) {
-        return update(updateTodo, id, authentication.getName());
+    HttpEntity<?> update(@RequestBody Todo.UpdateTodo updateTodo,
+                         @PathVariable("id") Integer id,
+                         Authentication authentication) {
+        logger.info("update {}", updateTodo);
+
+        return yadaServices.update(id, updateTodo, authentication.getName())
+                .map(r -> ResponseEntity.accepted().body(toUri(r)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     private URI toUri(Todo r) {
@@ -90,52 +110,6 @@ class TodoRestApi
     @ResponseBody
     @Secured("ADMIN")
     HttpEntity<?> deleteCall(@PathVariable("id") Integer id) {
-        return delete(id);
-    }
-
-    @Override
-    public HttpEntity<?> getSome() {
-        logger.info("getSome");
-
-        return ResponseEntity.ok(
-                yadaServices
-                        .get()
-                        .peek(todo -> todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel()))
-                        .collect(Collectors.toList()));
-    }
-
-    @Override
-    public HttpEntity<?> getOne(Integer id) {
-        logger.info("getOne {}", id);
-
-        return yadaServices
-                .get(id)
-                .map(todo -> {
-                    todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel());
-                    return ResponseEntity.ok(todo);
-                })
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @Override
-    public HttpEntity<?> create(Todo.CreateTodo createTodo, String userName) {
-        logger.info("create {}", createTodo);
-        return ResponseEntity
-                .created(toUri(yadaServices.create(createTodo, userName)))
-                .build();
-    }
-
-    @Override
-    public HttpEntity<?> update(Todo.UpdateTodo updateTodo, Integer id, String userName) {
-        logger.info("update {}", updateTodo);
-
-        return yadaServices.update(id, updateTodo, userName)
-                .map(r -> ResponseEntity.accepted().body(toUri(r)))
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @Override
-    public HttpEntity<?> delete(Integer id) {
         logger.info("delete {}", id);
         yadaServices.delete(id);
         return ResponseEntity.accepted().build();
