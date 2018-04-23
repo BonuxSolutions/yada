@@ -5,7 +5,7 @@ import org.springframework.stereotype.Repository;
 
 import bonux.yada.users.model.User;
 
-@Repository("userRepository")
+@Repository("userRepository2")
 public interface UserRepo extends JpaRepository<User, String> {
 
 }

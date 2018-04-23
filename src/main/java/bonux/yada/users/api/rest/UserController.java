@@ -1,5 +1,8 @@
 package bonux.yada.users.api.rest;
 
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
+import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
+
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -12,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -38,11 +42,20 @@ class UserController {
 	@ResponseBody
 	@Secured({ "ADMIN" })
 	HttpEntity<?> readAll() {
-		logger.info("reading all users");
-
-		return ResponseEntity.ok(userServices.streamAll()
-//				.peek(user -> user.add(linkTo(methodOn(UserController.class).getSome()).slash(todo.id).withSelfRel()))
+		logger.info("Reading all users.");
+		return ResponseEntity.ok(userServices.streamAll().peek(
+				user -> user.add(linkTo(methodOn(UserController.class).readAll()).slash(user.username).withSelfRel()))
 				.collect(Collectors.toList()));
 	}
 
+	@GetMapping(path = "/user/{username}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@ResponseBody
+	@Secured({ "ADMIN" })
+	HttpEntity<?> readByUsername(@PathVariable("username") String username) {
+		logger.info("Reading user by {}.", username);
+		return ResponseEntity.ok(userServices.streamAll() // TODO: this is ain't correct
+				.peek(user -> user.add(linkTo(methodOn(UserController.class).readAll()).slash(user.username).withSelfRel()))
+				.collect(Collectors.toList()));
+	}
 }
