@@ -4,19 +4,17 @@ import bonux.yada.model.Todo;
 import bonux.yada.repos.TodoRepo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface YadaServices {
-    Optional<URI> update(Integer id,
-                         Todo.UpdateTodo updateTodo,
-                         String userName);
+    Optional<Todo> update(Integer id,
+                          Todo.UpdateTodo updateTodo,
+                          String userName);
 
-    URI create(Todo.CreateTodo createTodo,
-               String userName);
+    Todo create(Todo.CreateTodo createTodo,
+                String userName);
 
     Stream<Todo> get();
 
@@ -37,23 +35,22 @@ class YadaServicesImpl
     }
 
     @Override
-    public Optional<URI> update(Integer id,
-                                Todo.UpdateTodo updateTodo,
-                                String userName) {
-        Optional<Todo> maybeTodo = todoRepo.findById(id).map(todo -> todo.forUpdate(updateTodo, userName));
-        return maybeTodo.map(todo -> ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .buildAndExpand(todoRepo.save(todo))
-                .toUri());
+    public Optional<Todo> update(Integer id,
+                                 Todo.UpdateTodo updateTodo,
+                                 String userName) {
+        Optional<Todo> maybeTodo = todoRepo
+                .findById(id)
+                .map(todo -> Todo.copy(todo).update(updateTodo, userName).build());
+        return maybeTodo.map(todo -> todoRepo.update(todo));
     }
 
     @Override
-    public URI create(Todo.CreateTodo createTodo, String userName) {
-        Todo todo1 = createTodo.withCreator(userName);
-        return ServletUriComponentsBuilder
-                .fromCurrentRequest()
-                .buildAndExpand(todoRepo.save(todo1))
-                .toUri();
+    public Todo create(Todo.CreateTodo createTodo, String userName) {
+        Todo todo = Todo
+                .builder()
+                .create(createTodo, userName)
+                .build();
+        return todoRepo.create(todo);
     }
 
     @Override

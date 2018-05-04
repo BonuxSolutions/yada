@@ -3,12 +3,4 @@ spring:
         username: postgres
         password: postgres
         initialization-mode: always
-        url: "jdbc:postgresql://database:5432/postgres"
-    jpa:
-      show-sql: true
-      database: POSTGRESQL
-      properties:
-        hibernate:
-          temp:
-            use_jdbc_metadata_defaults: false
-      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
+        url: "jdbc:postgresql://localhost:5432/postgres"

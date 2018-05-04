@@ -2,11 +2,3 @@ spring:
     datasource:
         initialization-mode: always
         url: "jdbc:postgresql://database:5432/postgres"
-    jpa:
-      show-sql: false
-      database: POSTGRESQL
-      properties:
-        hibernate:
-          temp:
-            use_jdbc_metadata_defaults: false
-      database-platform: org.hibernate.dialect.PostgreSQL9Dialect
