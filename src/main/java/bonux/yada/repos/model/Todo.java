@@ -1,24 +1,19 @@
-package bonux.yada.model;
+package bonux.yada.repos.model;
 
 import bonux.yada.types.CloseReason;
 import bonux.yada.types.TaskState;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import org.springframework.core.style.ToStringCreator;
-import org.springframework.hateoas.ResourceSupport;
 
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public final class Todo extends ResourceSupport {
+public final class Todo {
     public final Integer id;
     public final String task;
     public final TaskState taskState;
     public final CloseReason closeReason;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public final LocalDateTime taskStart;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     public final LocalDateTime taskEnd;
     public final LocalDateTime created;
     public final String createdBy;
@@ -67,51 +62,4 @@ public final class Todo extends ResourceSupport {
 
         return map;
     }
-
-    public static class CreateTodo {
-        public String task;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        public LocalDateTime taskStart;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        public LocalDateTime taskEnd;
-
-        @Override
-        public String toString() {
-            return new ToStringCreator(this)
-                    .append("task", task)
-                    .append("taskStart", taskStart.toString())
-                    .append("taskEnd", taskEnd.toString())
-                    .toString();
-        }
-    }
-
-    public static class UpdateTodo {
-        public String task;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        public LocalDateTime taskStart;
-        @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-        public LocalDateTime taskEnd;
-        public TaskState taskState;
-        public CloseReason closeReason;
-
-        @Override
-        public String toString() {
-            return new ToStringCreator(this)
-                    .append("task", task)
-                    .append("taskStart", taskStart)
-                    .append("taskEnd", taskEnd)
-                    .append("taskState", taskState)
-                    .append("closeReason", closeReason)
-                    .toString();
-        }
-    }
-
-    public static TodoBuilder builder() {
-        return new TodoBuilder();
-    }
-
-    public static TodoBuilder copy(Todo todo) {
-        return new TodoBuilder(todo);
-    }
-
 }

@@ -1,7 +1,8 @@
 package bonux.yada.repos;
 
-import bonux.yada.model.Todo;
-import bonux.yada.model.TodoRowMapper;
+import bonux.yada.repos.model.ModelTodoBuilder;
+import bonux.yada.repos.model.Todo;
+import bonux.yada.repos.model.TodoRowMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -76,7 +77,7 @@ class TodoRepoImpl implements TodoRepo {
     @Override
     public Todo create(Todo todo) {
         Integer id = incrementer.nextIntValue();
-        Todo todo1 = Todo.copy(todo)
+        Todo todo1 = ModelTodoBuilder.from(todo)
                 .withId(id)
                 .build();
         jdbcTemplate.update("INSERT INTO todo " +
@@ -105,7 +106,7 @@ class TodoRepoImpl implements TodoRepo {
                         "AND version = :version",
                 todo.asMap());
         if (r > 0) {
-            return Todo.copy(todo).incrementVersion().build();
+            return ModelTodoBuilder.from(todo).incrementVersion().build();
         } else {
             throw throwVersionDoesNotMatch(todo.id, todo.version);
         }

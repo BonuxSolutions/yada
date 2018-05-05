@@ -1,7 +1,9 @@
 package bonux.yada.services;
 
-import bonux.yada.model.Todo;
+import bonux.yada.domain.DomainTodoBuilder;
+import bonux.yada.domain.Todo;
 import bonux.yada.repos.TodoRepo;
+import bonux.yada.repos.model.ModelTodoBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,12 +11,11 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 public interface YadaServices {
-    Optional<Todo> update(Integer id,
-                          Todo.UpdateTodo updateTodo,
-                          String userName);
 
-    Todo create(Todo.CreateTodo createTodo,
-                String userName);
+    Optional<Todo> update(Integer id,
+                          Todo updateTodo);
+
+    Todo create(Todo createTodo);
 
     Stream<Todo> get();
 
@@ -36,30 +37,25 @@ class YadaServicesImpl
 
     @Override
     public Optional<Todo> update(Integer id,
-                                 Todo.UpdateTodo updateTodo,
-                                 String userName) {
-        Optional<Todo> maybeTodo = todoRepo
+                                 Todo updateTodo) {
+        Optional<bonux.yada.repos.model.Todo> maybeTodo = todoRepo
                 .findById(id)
-                .map(todo -> Todo.copy(todo).update(updateTodo, userName).build());
-        return maybeTodo.map(todo -> todoRepo.update(todo));
+                .map(todo -> ModelTodoBuilder.from(todo).update(updateTodo).build());
+        return maybeTodo.map(todo -> DomainTodoBuilder.fromModel(todoRepo.update(todo)));
     }
 
     @Override
-    public Todo create(Todo.CreateTodo createTodo, String userName) {
-        Todo todo = Todo
-                .builder()
-                .create(createTodo, userName)
-                .build();
-        return todoRepo.create(todo);
+    public Todo create(Todo todo) {
+        return DomainTodoBuilder.fromModel(todoRepo.create(ModelTodoBuilder.builder().create(todo).build()));
     }
 
     @Override
     public Optional<Todo> get(Integer id) {
-        return todoRepo.findById(id);
+        return todoRepo.findById(id).map(DomainTodoBuilder::fromModel);
     }
 
     @Override
     public Stream<Todo> get() {
-        return todoRepo.findAll().stream();
+        return todoRepo.findAll().stream().map(DomainTodoBuilder::fromModel);
     }
 }
