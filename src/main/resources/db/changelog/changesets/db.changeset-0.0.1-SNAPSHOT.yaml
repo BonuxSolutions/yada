@@ -60,6 +60,11 @@ databaseChangeLog:
                 type: varchar(100)
                 constraints:
                   nullable: false
+            - column:
+                name: version
+                type: integer
+                constraints:
+                  nullable: false
       - createTable:
           tableName: users
           columns:

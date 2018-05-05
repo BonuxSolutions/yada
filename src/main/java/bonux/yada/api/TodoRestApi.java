@@ -12,7 +12,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.stream.Collectors;
 
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
@@ -20,9 +22,9 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/yada")
-class TodoController {
+class TodoRestApi {
 
-    private static Logger logger = LoggerFactory.getLogger(TodoController.class);
+    private static Logger logger = LoggerFactory.getLogger(TodoRestApi.class);
 
     @Autowired
     private YadaServices yadaServices;
@@ -45,7 +47,7 @@ class TodoController {
         return ResponseEntity.ok(
                 yadaServices
                         .get()
-                        .peek(todo -> todo.add(linkTo(methodOn(TodoController.class).getSome()).slash(todo.id).withSelfRel()))
+                        .peek(todo -> todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel()))
                         .collect(Collectors.toList()));
     }
 
@@ -61,7 +63,7 @@ class TodoController {
         return yadaServices
                 .get(id)
                 .map(todo -> {
-                    todo.add(linkTo(methodOn(TodoController.class).getSome()).slash(todo.id).withSelfRel());
+                    todo.add(linkTo(methodOn(TodoRestApi.class).getSome()).slash(todo.id).withSelfRel());
                     return ResponseEntity.ok(todo);
                 })
                 .orElseGet(() -> ResponseEntity.notFound().build());
@@ -75,7 +77,9 @@ class TodoController {
     HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
-        return ResponseEntity.created(yadaServices.create(createTodo, authentication.getName())).build();
+        return ResponseEntity
+                .created(toUri(yadaServices.create(createTodo, authentication.getName())))
+                .build();
     }
 
     @PutMapping(
@@ -87,10 +91,17 @@ class TodoController {
                          @PathVariable("id") Integer id,
                          Authentication authentication) {
         logger.info("update {}", updateTodo);
-        return yadaServices.update(id, updateTodo, authentication.getName())
-                .map(r -> ResponseEntity.accepted().body(r))
-                .orElseGet(() -> ResponseEntity.notFound().build());
 
+        return yadaServices.update(id, updateTodo, authentication.getName())
+                .map(r -> ResponseEntity.accepted().body(toUri(r)))
+                .orElseGet(() -> ResponseEntity.notFound().build());
+    }
+
+    private URI toUri(Todo r) {
+        return ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .buildAndExpand(r)
+                .toUri();
     }
 
     @DeleteMapping(
@@ -98,10 +109,9 @@ class TodoController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @ResponseBody
     @Secured("ADMIN")
-    HttpEntity<?> delete(@PathVariable("id") Integer id) {
+    HttpEntity<?> deleteCall(@PathVariable("id") Integer id) {
         logger.info("delete {}", id);
         yadaServices.delete(id);
         return ResponseEntity.accepted().build();
     }
-
 }
