@@ -34,7 +34,7 @@ public interface TodoRepo {
     void deleteById(Integer id);
 }
 
-@Repository("userRepository")
+@Repository("todoRepository")
 class TodoRepoImpl implements TodoRepo {
 
     private NamedParameterJdbcTemplate jdbcTemplate;
