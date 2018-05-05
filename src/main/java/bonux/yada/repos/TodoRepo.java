@@ -56,11 +56,10 @@ class TodoRepoImpl implements TodoRepo {
     public Optional<Todo> findById(Integer id) {
         Map<String, Integer> namedParameters = Collections.singletonMap("id", id);
 
-        return Optional
-                .ofNullable(jdbcTemplate.queryForObject(
-                        "SELECT * FROM todo WHERE id = :id",
-                        namedParameters,
-                        rowMapper));
+        return jdbcTemplate.query(
+                "SELECT * FROM todo WHERE id = :id",
+                namedParameters,
+                rowMapper).stream().findFirst();
     }
 
     @Override
