@@ -93,6 +93,11 @@ public final class TodoBuilder {
         return this;
     }
 
+    public TodoBuilder incrementVersion() {
+        this.version = this.version + 1;
+        return this;
+    }
+
     public TodoBuilder create(Todo.CreateTodo createTodo, String userName) {
         this.task = createTodo.task;
         this.taskState = NEW;
@@ -129,7 +134,6 @@ public final class TodoBuilder {
 
         this.updated = LocalDateTime.now();
         this.updatedBy = userName;
-        this.version = this.version + 1;
 
         return this;
     }

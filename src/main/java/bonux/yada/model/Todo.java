@@ -9,6 +9,7 @@ import org.springframework.hateoas.ResourceSupport;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 public final class Todo extends ResourceSupport {
     public final Integer id;
@@ -54,14 +55,14 @@ public final class Todo extends ResourceSupport {
 
         map.put("id", id);
         map.put("task", task);
-        map.put("task_state", taskState);
-        map.put("close_reason", closeReason);
-        map.put("task_start", taskStart);
-        map.put("task_end", taskEnd);
+        map.put("taskState", taskState.toString());
+        map.put("closeReason", Optional.ofNullable(closeReason).map(CloseReason::toString).orElse(null));
+        map.put("taskStart", taskStart);
+        map.put("taskEnd", taskEnd);
         map.put("created", created);
-        map.put("created_by", createdBy);
+        map.put("createdBy", createdBy);
         map.put("updated", updated);
-        map.put("updated_by", updatedBy);
+        map.put("updatedBy", updatedBy);
         map.put("version", version);
 
         return map;

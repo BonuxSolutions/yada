@@ -8,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
-import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.jdbc.support.incrementer.AbstractSequenceMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.H2SequenceMaxValueIncrementer;
 import org.springframework.jdbc.support.incrementer.PostgresSequenceMaxValueIncrementer;
@@ -22,7 +21,20 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
+import static bonux.yada.repos.TodoRepo.throwVersionDoesNotMatch;
+
 public interface TodoRepo {
+
+    class VersionDoesNotMatch extends RuntimeException {
+        private VersionDoesNotMatch(String msg) {
+            super(msg);
+        }
+    }
+
+    static VersionDoesNotMatch throwVersionDoesNotMatch(Integer id, Integer version) {
+        return new VersionDoesNotMatch(String.format("version {%d} does not match: id{%d}", version, id));
+    }
+
     Optional<Todo> findById(Integer id);
 
     Collection<Todo> findAll();
@@ -37,20 +49,11 @@ public interface TodoRepo {
 @Repository("todoRepository")
 class TodoRepoImpl implements TodoRepo {
 
+    @Autowired
     private NamedParameterJdbcTemplate jdbcTemplate;
+    @Autowired
     private AbstractSequenceMaxValueIncrementer incrementer;
     private RowMapper<Todo> rowMapper = new TodoRowMapper();
-    private SimpleJdbcInsert insert;
-
-    @Autowired
-    TodoRepoImpl(NamedParameterJdbcTemplate jdbcTemplate,
-                 AbstractSequenceMaxValueIncrementer incrementer) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.incrementer = incrementer;
-
-        insert = new SimpleJdbcInsert(jdbcTemplate.getJdbcTemplate());
-        insert.setTableName("todo");
-    }
 
     @Override
     public Optional<Todo> findById(Integer id) {
@@ -76,7 +79,12 @@ class TodoRepoImpl implements TodoRepo {
         Todo todo1 = Todo.copy(todo)
                 .withId(id)
                 .build();
-        insert.execute(todo1.asMap());
+        jdbcTemplate.update("INSERT INTO todo " +
+                        "(ID, TASK, TASK_STATE, CLOSE_REASON, TASK_START, TASK_END, " +
+                        "CREATED, CREATED_BY, UPDATED, UPDATED_BY, VERSION) " +
+                        "VALUES(:id, :task, :taskState, :closeReason, :taskStart, :taskEnd, " +
+                        ":created, :createdBy, :updated, :updatedBy, :version)",
+                todo1.asMap());
 
         return todo1;
     }
@@ -84,13 +92,29 @@ class TodoRepoImpl implements TodoRepo {
     @Transactional
     @Override
     public Todo update(Todo todo) {
-        return null;
+        int r = jdbcTemplate.update("UPDATE todo SET " +
+                        "task = :task, " +
+                        "task_state = :taskState, " +
+                        "close_reason = :closeReason, " +
+                        "task_start = :taskStart, " +
+                        "task_end = :taskEnd, " +
+                        "updated = :updated, " +
+                        "updated_by = :updatedBy, " +
+                        "version = :version + 1" +
+                        "WHERE id = :id " +
+                        "AND version = :version",
+                todo.asMap());
+        if (r > 0) {
+            return Todo.copy(todo).incrementVersion().build();
+        } else {
+            throw throwVersionDoesNotMatch(todo.id, todo.version);
+        }
     }
 
     @Transactional
     @Override
     public void deleteById(Integer id) {
-
+        jdbcTemplate.update("DELETE todo WHERE id = :id", Collections.singletonMap("id", id));
     }
 }
 
