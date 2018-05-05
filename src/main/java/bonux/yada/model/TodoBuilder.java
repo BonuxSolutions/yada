@@ -89,7 +89,7 @@ public final class TodoBuilder {
     }
 
     public TodoBuilder withVersion(Integer version) {
-        this.version = version;
+        this.version = Objects.requireNonNull(version);
         return this;
     }
 
