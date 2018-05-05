@@ -4,6 +4,7 @@ import bonux.yada.types.CloseReason;
 import bonux.yada.types.TaskState;
 
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 import static bonux.yada.types.TaskState.NEW;
 
@@ -38,12 +39,12 @@ public final class TodoBuilder {
     }
 
     public TodoBuilder withId(Integer id) {
-        this.id = id;
+        this.id = Objects.requireNonNull(id);
         return this;
     }
 
     public TodoBuilder withTask(String task) {
-        this.task = task;
+        this.task = Objects.requireNonNull(task);
         return this;
     }
 
@@ -134,20 +135,17 @@ public final class TodoBuilder {
     }
 
     public Todo build() {
-        Todo todo = new Todo();
-
-        todo.id = id;
-        todo.task = task;
-        todo.taskState = taskState;
-        todo.closeReason = closeReason;
-        todo.taskStart = taskStart;
-        todo.taskEnd = taskEnd;
-        todo.created = created;
-        todo.createdBy = createdBy;
-        todo.updated = updated;
-        todo.updatedBy = updatedBy;
-        todo.version = version;
-
-        return todo;
+        return new Todo(
+                id,
+                task,
+                taskState,
+                closeReason,
+                taskStart,
+                taskEnd,
+                created,
+                createdBy,
+                updated,
+                updatedBy,
+                version);
     }
 }

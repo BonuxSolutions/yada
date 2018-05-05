@@ -6,28 +6,56 @@ import org.springframework.jdbc.core.RowMapper;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Optional;
 
 public final class TodoRowMapper implements RowMapper<Todo> {
     @Override
     public Todo mapRow(ResultSet rs, int rowNum) throws SQLException {
         TodoBuilder builder = Todo.builder();
 
-        String closeReason = rs.getString("close_reason");
+        TaskState taskState = Optional
+                .ofNullable(rs.getString("task_state"))
+                .map(TaskState::valueOf)
+                .orElseThrow();
+        CloseReason closeReason = Optional
+                .ofNullable(rs.getString("close_reason"))
+                .map(CloseReason::valueOf)
+                .orElse(null);
+        LocalDateTime taskStart = Optional
+                .ofNullable(rs.getTimestamp("task_start"))
+                .map(Timestamp::toInstant)
+                .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
+                .orElseThrow();
+        LocalDateTime taskEnd = Optional
+                .ofNullable(rs.getTimestamp("task_end"))
+                .map(Timestamp::toInstant)
+                .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
+                .orElseThrow();
+        LocalDateTime created = Optional
+                .ofNullable(rs.getTimestamp("created"))
+                .map(Timestamp::toInstant)
+                .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
+                .orElseThrow();
+        LocalDateTime updated = Optional
+                .ofNullable(rs.getTimestamp("updated"))
+                .map(Timestamp::toInstant)
+                .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
+                .orElseThrow();
 
-        builder.withId(rs.getInt("id"))
+        return builder.withId(rs.getInt("id"))
                 .withTask(rs.getString("task"))
-                .withTaskState(TaskState.valueOf(rs.getString("task_state")))
-                .withCloseReason(closeReason != null ? CloseReason.valueOf(closeReason) : null)
-                .withTaskStart(LocalDateTime.ofInstant(rs.getTimestamp("task_start").toInstant(), ZoneOffset.UTC))
-                .withTaskEnd(LocalDateTime.ofInstant(rs.getTimestamp("task_end").toInstant(), ZoneOffset.UTC))
-                .withCreated(LocalDateTime.ofInstant(rs.getTimestamp("created").toInstant(), ZoneOffset.UTC))
+                .withTaskState(taskState)
+                .withCloseReason(closeReason)
+                .withTaskStart(taskStart)
+                .withTaskEnd(taskEnd)
+                .withCreated(created)
                 .withCreatedBy(rs.getString("created_by"))
-                .withUpdated(LocalDateTime.ofInstant(rs.getTimestamp("updated").toInstant(), ZoneOffset.UTC))
+                .withUpdated(updated)
                 .withUpdatedBy(rs.getString("updated_by"))
-                .withVersion(rs.getInt("version"));
-
-        return builder.build();
+                .withVersion(rs.getInt("version"))
+                .build();
     }
 }
