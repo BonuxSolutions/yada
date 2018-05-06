@@ -46,7 +46,7 @@ public final class Todo {
     }
 
     public Map<String, Object> asMap() {
-        Map<String, Object> map = new HashMap<>();
+        var map = new HashMap<String, Object>();
 
         map.put("id", id);
         map.put("task", task);

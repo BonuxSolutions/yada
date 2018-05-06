@@ -1,6 +1,7 @@
 package bonux.yada.api;
 
 import bonux.yada.domain.Todo;
+import bonux.yada.repos.TodoRepo;
 import bonux.yada.services.YadaServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +34,12 @@ class TodoRestApi {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     void handle(Exception e) {
         logger.error(e.getMessage(), e);
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    void handle(TodoRepo.VersionDoesNotMatch e) {
+        logger.warn(e.getMessage(), e);
     }
 
     @GetMapping(

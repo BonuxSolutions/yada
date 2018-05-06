@@ -38,7 +38,7 @@ class YadaServicesImpl
     @Override
     public Optional<Todo> update(Integer id,
                                  Todo updateTodo) {
-        Optional<bonux.yada.repos.model.Todo> maybeTodo = todoRepo
+        var maybeTodo = todoRepo
                 .findById(id)
                 .map(todo -> ModelTodoBuilder.from(todo).update(updateTodo).build());
         return maybeTodo.map(todo -> DomainTodoBuilder.fromModel(todoRepo.update(todo)));
