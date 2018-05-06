@@ -55,7 +55,7 @@ class YadaUserDetailsService {
 
     @Bean
     UserDetailsService userDetailsService() {
-        JdbcDaoImpl userDetailsService = new JdbcDaoImpl();
+        var userDetailsService = new JdbcDaoImpl();
         userDetailsService.setJdbcTemplate(jdbcTemplate);
 
         return userDetailsService;

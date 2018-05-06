@@ -20,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -60,7 +59,7 @@ class TodoRepoImpl implements TodoRepo {
 
     @Override
     public Optional<Todo> findById(Integer id) {
-        Map<String, Integer> namedParameters = Collections.singletonMap("id", id);
+        var namedParameters = Collections.singletonMap("id", id);
 
         return jdbcTemplate.query(
                 "SELECT * FROM todo WHERE id = :id",
@@ -78,8 +77,8 @@ class TodoRepoImpl implements TodoRepo {
     @Transactional
     @Override
     public Todo create(Todo todo) {
-        Integer id = incrementer.nextIntValue();
-        Todo todo1 = ModelTodoBuilder.from(todo)
+        var id = incrementer.nextIntValue();
+        var todo1 = ModelTodoBuilder.from(todo)
                 .withId(id)
                 .build();
         jdbcTemplate.update("INSERT INTO todo " +
@@ -95,7 +94,7 @@ class TodoRepoImpl implements TodoRepo {
     @Transactional
     @Override
     public Todo update(Todo todo) {
-        int r = jdbcTemplate.update("UPDATE todo SET " +
+        var r = jdbcTemplate.update("UPDATE todo SET " +
                         "task = :task, " +
                         "task_state = :taskState, " +
                         "close_reason = :closeReason, " +

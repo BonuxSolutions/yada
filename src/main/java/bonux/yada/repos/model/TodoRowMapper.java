@@ -14,32 +14,32 @@ import java.util.Optional;
 public final class TodoRowMapper implements RowMapper<Todo> {
     @Override
     public Todo mapRow(ResultSet rs, int rowNum) throws SQLException {
-        ModelTodoBuilder builder = ModelTodoBuilder.builder();
+        var builder = ModelTodoBuilder.builder();
 
-        TaskState taskState = Optional
+        var taskState = Optional
                 .ofNullable(rs.getString("task_state"))
                 .map(TaskState::valueOf)
                 .orElseThrow();
-        CloseReason closeReason = Optional
+        var closeReason = Optional
                 .ofNullable(rs.getString("close_reason"))
                 .map(CloseReason::valueOf)
                 .orElse(null);
-        LocalDateTime taskStart = Optional
+        var taskStart = Optional
                 .ofNullable(rs.getTimestamp("task_start"))
                 .map(Timestamp::toInstant)
                 .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
                 .orElseThrow();
-        LocalDateTime taskEnd = Optional
+        var taskEnd = Optional
                 .ofNullable(rs.getTimestamp("task_end"))
                 .map(Timestamp::toInstant)
                 .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
                 .orElseThrow();
-        LocalDateTime created = Optional
+        var created = Optional
                 .ofNullable(rs.getTimestamp("created"))
                 .map(Timestamp::toInstant)
                 .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))
                 .orElseThrow();
-        LocalDateTime updated = Optional
+        var updated = Optional
                 .ofNullable(rs.getTimestamp("updated"))
                 .map(Timestamp::toInstant)
                 .map(i -> LocalDateTime.ofInstant(i, ZoneOffset.UTC))

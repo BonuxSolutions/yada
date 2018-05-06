@@ -1,5 +1,6 @@
 package bonux.yada.repos.model;
 
+import bonux.yada.repos.TodoRepo;
 import bonux.yada.types.CloseReason;
 import bonux.yada.types.TaskState;
 
@@ -65,6 +66,7 @@ public final class ModelTodoBuilder {
 
         this.updated = LocalDateTime.now();
         this.updatedBy = todo.user();
+        this.version = todo.version;
 
         return this;
     }
@@ -75,7 +77,7 @@ public final class ModelTodoBuilder {
         this.taskStart = todo.taskStart;
         this.taskEnd = todo.taskEnd;
 
-        LocalDateTime localDateTime = LocalDateTime.now();
+        var localDateTime = LocalDateTime.now();
 
         this.created = localDateTime;
         this.createdBy = todo.user();
