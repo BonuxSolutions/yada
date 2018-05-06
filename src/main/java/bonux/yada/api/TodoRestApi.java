@@ -1,6 +1,6 @@
 package bonux.yada.api;
 
-import bonux.yada.model.Todo;
+import bonux.yada.domain.Todo;
 import bonux.yada.services.YadaServices;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,11 +74,11 @@ class TodoRestApi {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Secured("ADMIN")
-    HttpEntity<?> create(@RequestBody Todo.CreateTodo createTodo,
+    HttpEntity<?> create(@RequestBody bonux.yada.domain.Todo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
         return ResponseEntity
-                .created(toUri(yadaServices.create(createTodo, authentication.getName())))
+                .created(toUri(yadaServices.create(createTodo.withUser(authentication.getName()))))
                 .build();
     }
 
@@ -87,12 +87,12 @@ class TodoRestApi {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Secured({"ADMIN", "USER"})
-    HttpEntity<?> update(@RequestBody Todo.UpdateTodo updateTodo,
+    HttpEntity<?> update(@RequestBody Todo updateTodo,
                          @PathVariable("id") Integer id,
                          Authentication authentication) {
         logger.info("update {}", updateTodo);
 
-        return yadaServices.update(id, updateTodo, authentication.getName())
+        return yadaServices.update(id, updateTodo.withUser(authentication.getName()))
                 .map(r -> ResponseEntity.accepted().body(toUri(r)))
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }

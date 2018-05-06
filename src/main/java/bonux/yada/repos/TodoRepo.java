@@ -1,8 +1,12 @@
 package bonux.yada.repos;
 
-import bonux.yada.model.Todo;
-import bonux.yada.model.TodoRowMapper;
+import bonux.yada.repos.model.ModelTodoBuilder;
+import bonux.yada.repos.model.Todo;
+import bonux.yada.repos.model.TodoRowMapper;
+import com.zaxxer.hikari.HikariDataSource;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -14,14 +18,13 @@ import org.springframework.jdbc.support.incrementer.PostgresSequenceMaxValueIncr
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 
-import static bonux.yada.repos.TodoRepo.throwVersionDoesNotMatch;
+import static bonux.yada.repos.TodoRepo.versionDoesNotMatch;
 
 public interface TodoRepo {
 
@@ -31,7 +34,7 @@ public interface TodoRepo {
         }
     }
 
-    static VersionDoesNotMatch throwVersionDoesNotMatch(Integer id, Integer version) {
+    static VersionDoesNotMatch versionDoesNotMatch(Integer id, Integer version) {
         return new VersionDoesNotMatch(String.format("version {%d} does not match: id{%d}", version, id));
     }
 
@@ -76,7 +79,7 @@ class TodoRepoImpl implements TodoRepo {
     @Override
     public Todo create(Todo todo) {
         Integer id = incrementer.nextIntValue();
-        Todo todo1 = Todo.copy(todo)
+        Todo todo1 = ModelTodoBuilder.from(todo)
                 .withId(id)
                 .build();
         jdbcTemplate.update("INSERT INTO todo " +
@@ -105,9 +108,9 @@ class TodoRepoImpl implements TodoRepo {
                         "AND version = :version",
                 todo.asMap());
         if (r > 0) {
-            return Todo.copy(todo).incrementVersion().build();
+            return ModelTodoBuilder.from(todo).incrementVersion().build();
         } else {
-            throw throwVersionDoesNotMatch(todo.id, todo.version);
+            throw versionDoesNotMatch(todo.id, todo.version);
         }
     }
 
@@ -121,8 +124,11 @@ class TodoRepoImpl implements TodoRepo {
 @Configuration
 class RepositoryConfiguration {
 
-    @Autowired
-    private DataSource dataSource;
+    @Bean
+    @ConfigurationProperties("yada.datasource")
+    HikariDataSource dataSource() {
+        return DataSourceBuilder.create().type(HikariDataSource.class).build();
+    }
 
     @Bean
     @Profile("inmem")
@@ -138,7 +144,7 @@ class RepositoryConfiguration {
 
     private Function<AbstractSequenceMaxValueIncrementer, AbstractSequenceMaxValueIncrementer> dbIncrementer =
             incrementer -> {
-                incrementer.setDataSource(dataSource);
+                incrementer.setDataSource(dataSource());
                 incrementer.setIncrementerName("todo_id_seq");
                 return incrementer;
             };

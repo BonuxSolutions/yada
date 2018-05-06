@@ -1,6 +1,5 @@
-spring:
+yada:
     datasource:
         username: postgres
         password: postgres
-        initialization-mode: always
-        url: "jdbc:postgresql://localhost:5432/postgres"
+        jdbc-url: 'jdbc:postgresql://localhost:5432/postgres'

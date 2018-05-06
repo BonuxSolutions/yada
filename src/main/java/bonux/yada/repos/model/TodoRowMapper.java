@@ -1,4 +1,4 @@
-package bonux.yada.model;
+package bonux.yada.repos.model;
 
 import bonux.yada.types.CloseReason;
 import bonux.yada.types.TaskState;
@@ -14,7 +14,7 @@ import java.util.Optional;
 public final class TodoRowMapper implements RowMapper<Todo> {
     @Override
     public Todo mapRow(ResultSet rs, int rowNum) throws SQLException {
-        TodoBuilder builder = Todo.builder();
+        ModelTodoBuilder builder = ModelTodoBuilder.builder();
 
         TaskState taskState = Optional
                 .ofNullable(rs.getString("task_state"))
