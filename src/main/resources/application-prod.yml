@@ -1,4 +1,4 @@
-spring:
+yada:
     datasource:
-        initialization-mode: always
-        url: "jdbc:postgresql://database:5432/postgres"
+        initialization-mode: never
+        jdbcUrl: "jdbc:postgresql://database:5432/postgres"

@@ -54,6 +54,8 @@ dependencies {
 
     compile("org.springframework:spring-jdbc")
 
+    compile("com.zaxxer:HikariCP")
+
     compile('org.liquibase:liquibase-core')
 
     runtime('com.h2database:h2')

@@ -46,27 +46,27 @@ public final class ModelTodoBuilder {
         return new ModelTodoBuilder(todo);
     }
 
-    public ModelTodoBuilder update(bonux.yada.domain.Todo todo){
-            if (todo.task != null) {
-                this.task = todo.task;
-            }
-            if (todo.closeReason != null) {
-                this.closeReason = todo.closeReason;
-            }
-            if (todo.taskState != null) {
-                this.taskState = todo.taskState;
-            }
-            if (todo.taskStart != null) {
-                this.taskStart = todo.taskStart;
-            }
-            if (todo.taskEnd != null) {
-                this.taskEnd = todo.taskEnd;
-            }
+    public ModelTodoBuilder update(bonux.yada.domain.Todo todo) {
+        if (todo.task != null) {
+            this.task = todo.task;
+        }
+        if (todo.closeReason != null) {
+            this.closeReason = todo.closeReason;
+        }
+        if (todo.taskState != null) {
+            this.taskState = todo.taskState;
+        }
+        if (todo.taskStart != null) {
+            this.taskStart = todo.taskStart;
+        }
+        if (todo.taskEnd != null) {
+            this.taskEnd = todo.taskEnd;
+        }
 
-            this.updated = LocalDateTime.now();
-            this.updatedBy = todo.user();
+        this.updated = LocalDateTime.now();
+        this.updatedBy = todo.user();
 
-            return this;
+        return this;
     }
 
     public ModelTodoBuilder create(bonux.yada.domain.Todo todo) {
@@ -91,52 +91,52 @@ public final class ModelTodoBuilder {
         return this;
     }
 
-    public ModelTodoBuilder withTask(String task) {
+    ModelTodoBuilder withTask(String task) {
         this.task = Objects.requireNonNull(task);
         return this;
     }
 
-    public ModelTodoBuilder withTaskState(TaskState taskState) {
+    ModelTodoBuilder withTaskState(TaskState taskState) {
         this.taskState = taskState;
         return this;
     }
 
-    public ModelTodoBuilder withCloseReason(CloseReason closeReason) {
+    ModelTodoBuilder withCloseReason(CloseReason closeReason) {
         this.closeReason = closeReason;
         return this;
     }
 
-    public ModelTodoBuilder withTaskStart(LocalDateTime taskStart) {
+    ModelTodoBuilder withTaskStart(LocalDateTime taskStart) {
         this.taskStart = taskStart;
         return this;
     }
 
-    public ModelTodoBuilder withTaskEnd(LocalDateTime taskEnd) {
+    ModelTodoBuilder withTaskEnd(LocalDateTime taskEnd) {
         this.taskEnd = taskEnd;
         return this;
     }
 
-    public ModelTodoBuilder withCreated(LocalDateTime created) {
+    ModelTodoBuilder withCreated(LocalDateTime created) {
         this.created = created;
         return this;
     }
 
-    public ModelTodoBuilder withCreatedBy(String createdBy) {
+    ModelTodoBuilder withCreatedBy(String createdBy) {
         this.createdBy = createdBy;
         return this;
     }
 
-    public ModelTodoBuilder withUpdated(LocalDateTime updated) {
+    ModelTodoBuilder withUpdated(LocalDateTime updated) {
         this.updated = updated;
         return this;
     }
 
-    public ModelTodoBuilder withUpdatedBy(String updatedBy) {
+    ModelTodoBuilder withUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
         return this;
     }
 
-    public ModelTodoBuilder withVersion(Integer version) {
+    ModelTodoBuilder withVersion(Integer version) {
         this.version = Objects.requireNonNull(version);
         return this;
     }

@@ -15,10 +15,10 @@ public final class Todo {
     public final CloseReason closeReason;
     public final LocalDateTime taskStart;
     public final LocalDateTime taskEnd;
-    public final LocalDateTime created;
-    public final String createdBy;
-    public final LocalDateTime updated;
-    public final String updatedBy;
+    final LocalDateTime created;
+    final String createdBy;
+    final LocalDateTime updated;
+    final String updatedBy;
     public final Integer version;
 
     Todo(Integer id,
