@@ -1,12 +1,10 @@
 module bonux.yada.todo {
+    exports bonux.yada.todo.api;
+
     requires bonux.yada.auth;
 
-    requires spring.boot;
-    requires spring.boot.autoconfigure;
-    requires spring.aop;
     requires spring.tx;
     requires spring.security.core;
-    requires spring.security.config;
     requires spring.beans;
     requires spring.web;
     requires spring.webmvc;

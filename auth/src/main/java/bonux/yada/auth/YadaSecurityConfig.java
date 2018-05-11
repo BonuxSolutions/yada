@@ -30,15 +30,15 @@ public class YadaSecurityConfig
     protected void configure(HttpSecurity http) throws Exception {
         http
                 .csrf()
-                .disable()
+                    .disable()
                 .requestCache()
-                .disable()
+                    .disable()
                 .httpBasic()
                 .and().authorizeRequests()
-                .antMatchers(HttpMethod.GET, "/yada/todos", "/yada/todos/", "/yada/todos/**").hasAnyAuthority(USER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.PUT, "/yada/todos/**").hasAnyAuthority(USER.name(), ADMIN.name())
-                .antMatchers(HttpMethod.POST, "/yada/todos", "/yada/todos/").hasAuthority(ADMIN.name())
-                .antMatchers(HttpMethod.DELETE, "/yada/todos/**").hasAuthority(ADMIN.name());
+                    .antMatchers(HttpMethod.GET, "/yada/todos", "/yada/todos/", "/yada/todos/**").hasAnyAuthority(USER.name(), ADMIN.name())
+                    .antMatchers(HttpMethod.PUT, "/yada/todos/**").hasAnyAuthority(USER.name(), ADMIN.name())
+                    .antMatchers(HttpMethod.POST, "/yada/todos", "/yada/todos/").hasAuthority(ADMIN.name())
+                    .antMatchers(HttpMethod.DELETE, "/yada/todos/**").hasAuthority(ADMIN.name());
     }
 }
 

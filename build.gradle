@@ -1,21 +1,17 @@
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
 
-ext.springBootVersion = '2.0.2.RELEASE'
-ext.dockerPluginVersion = '0.19.2'
-ext.sonarqubePluginVersion = '2.6.2'
-
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
+ext.springBootVersion = '2.0.2.RELEASE'
+ext.dockerPluginVersion = '0.19.2'
+ext.sonarqubePluginVersion = '2.6.2'
+ext.checkstyleVersion = '8.9'
+ext.sevntuChecksVersion = '1.29.0'
+
 ext.sourceCompatibility = 1.10
 ext.targetCompatibility = 1.10
-
-allprojects {
-    repositories {
-        mavenCentral()
-    }
-}
 
 ext.libraries = [
         jdbcH2      : 'com.h2database:h2',
@@ -25,6 +21,12 @@ ext.libraries = [
         db_init     : 'org.liquibase:liquibase-core',
         test        : 'org.springframework.boot:spring-boot-starter-test'
 ]
+
+allprojects {
+    repositories {
+        mavenCentral()
+    }
+}
 
 pmd {
     ignoreFailures = true
@@ -55,11 +57,60 @@ checkstyle {
     ignoreFailures = true
     configFile = file("${project.rootDir}/checkstyle.xml")
 
-    project.ext.checkstyleVersion = '8.9'
-    project.ext.sevntuChecksVersion = '1.29.0'
-
     dependencies {
         checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
         checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
+    }
+}
+
+subprojects {
+    afterEvaluate { Project project1 ->
+        if (project1 != project(':infra')) {
+            repositories {
+                jcenter()
+            }
+
+            compileJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+
+            compileTestJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'junit',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+
+            test {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    jvmArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'ALL-MODULE-PATH',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+
+            bootJar {
+                manifest {
+                    attributes 'Start-Class': 'bonux.yada.YadaApplication'
+                }
+            }
+        }
     }
 }

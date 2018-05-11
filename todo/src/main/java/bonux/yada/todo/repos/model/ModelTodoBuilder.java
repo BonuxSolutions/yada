@@ -6,8 +6,6 @@ import bonux.yada.todo.types.TaskState;
 import java.time.LocalDateTime;
 import java.util.Objects;
 
-import static bonux.yada.todo.types.TaskState.NEW;
-
 public final class ModelTodoBuilder {
     private Integer id;
     private String task;
@@ -72,7 +70,7 @@ public final class ModelTodoBuilder {
 
     public ModelTodoBuilder create(bonux.yada.todo.domain.Todo todo) {
         this.task = todo.task;
-        this.taskState = NEW;
+        this.taskState = TaskState.NEW;
         this.taskStart = todo.taskStart;
         this.taskEnd = todo.taskEnd;
 

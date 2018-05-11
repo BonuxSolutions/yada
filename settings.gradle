@@ -3,4 +3,5 @@ include 'auth'
 include 'user-management'
 include 'todo'
 include 'infra'
+include 'app'
 

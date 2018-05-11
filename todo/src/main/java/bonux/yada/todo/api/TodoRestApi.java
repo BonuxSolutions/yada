@@ -81,7 +81,7 @@ class TodoRestApi {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Secured("ADMIN")
-    HttpEntity<?> create(@RequestBody bonux.yada.todo.domain.Todo createTodo,
+    HttpEntity<?> create(@RequestBody Todo createTodo,
                          Authentication authentication) {
         logger.info("create {}", createTodo);
         return ResponseEntity

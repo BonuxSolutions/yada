@@ -2,26 +2,16 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubePluginVersion}"
-    }
 }
 
 plugins {
     id 'org.springframework.boot' version '2.0.2.RELEASE'
-    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
-    id 'application'
+    id 'java-library'
 }
 
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
-apply plugin: "org.sonarqube"
 
-javaModule.name = 'bonux.yada.todo'
+ext.moduleName = 'bonux.yada.todo'
 
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
@@ -30,31 +20,14 @@ group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
 dependencies {
-    compile project (':auth')
+    implementation project (':auth')
 
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-aop')
-    compile('org.springframework.boot:spring-boot-starter-hateoas')
-    compile('org.springframework.boot:spring-boot-starter-jersey') {
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
+    implementation('org.springframework.boot:spring-boot-starter-jersey') {
         exclude group: 'org.glassfish.hk2.external'
     }
-    compile('org.springframework.boot:spring-boot-starter-quartz')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-security')
 
-    compile libraries.db_support
-    runtime libraries.jdbcPostgres
-    runtime libraries.jdbcH2
-    compile libraries.db_init
-}
-
-def activeProfiles = project.getProperties().get("spring.profiles.active")
-
-bootRun {
-    if (activeProfiles != null) {
-        systemProperties = [
-                'spring.profiles.active': activeProfiles
-        ]
-    }
+    implementation libraries.db_support
 }

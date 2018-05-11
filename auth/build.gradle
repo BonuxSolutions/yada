@@ -2,20 +2,14 @@ buildscript {
     repositories {
         mavenCentral()
     }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
 }
 
-plugins {
-    id 'org.springframework.boot' version '2.0.2.RELEASE'
-    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
-    id 'java-library'
-}
-
-javaModule.name = 'bonux.yada.auth'
-
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
+apply plugin: 'java-library'
 
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
@@ -23,12 +17,12 @@ targetCompatibility = 1.10
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
-dependencies {
-    compile libraries.db_support
-    runtime libraries.jdbcPostgres
-    runtime libraries.jdbcH2
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-web')
+ext.moduleName = 'bonux.yada.auth'
 
-    testCompile('org.springframework.security:spring-security-test')
+dependencies {
+    implementation libraries.db_support
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+
+    testImplementation('org.springframework.security:spring-security-test')
 }
