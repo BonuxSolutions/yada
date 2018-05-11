@@ -1,96 +1,30 @@
-buildscript {
-    ext {
-        springBootVersion = '2.0.1.RELEASE'
-        dockerPluginVersion = '0.19.2'
-        sonarqubePluginVersion = '2.6.2'
-    }
-    repositories {
-        mavenCentral()
-        maven {
-            url "https://plugins.gradle.org/m2/"
-        }
-    }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubePluginVersion}"
-    }
-}
-
-plugins {
-    id 'org.springframework.boot' version '2.0.1.RELEASE'
-}
-
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.palantir.docker'
 apply plugin: 'checkstyle'
 apply plugin: 'pmd'
-apply plugin: "org.sonarqube"
+
+ext.springBootVersion = '2.0.2.RELEASE'
+ext.dockerPluginVersion = '0.19.2'
+ext.sonarqubePluginVersion = '2.6.2'
 
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+ext.sourceCompatibility = 1.10
+ext.targetCompatibility = 1.10
 
-repositories {
-    mavenCentral()
-}
-
-dependencies {
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-aop')
-    compile('org.springframework.boot:spring-boot-starter-hateoas')
-    compile('org.springframework.boot:spring-boot-starter-jersey')
-    compile('org.springframework.boot:spring-boot-starter-quartz')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.springframework.session:spring-session-core')
-    runtime('org.springframework.boot:spring-boot-devtools')
-
-    compile("org.springframework:spring-jdbc")
-
-    compile("com.zaxxer:HikariCP")
-
-    compile('org.liquibase:liquibase-core')
-
-    runtime('com.h2database:h2')
-    runtime('org.postgresql:postgresql')
-
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('org.springframework.security:spring-security-test')
-}
-
-String activeProfiles = project.getProperties().get("spring.profiles.active")
-
-bootRun {
-    if (activeProfiles != null) {
-        systemProperties = [
-                'spring.profiles.active': activeProfiles
-        ]
+allprojects {
+    repositories {
+        mavenCentral()
     }
 }
 
-docker {
-    dockerfile = file("src/infra/Dockerfile")
-    name "${project.group}/${jar.baseName}"
-    files(jar.archivePath, file("src/infra/run.sh"))
-    noCache true
-
-    def javaOpts = "-Dspring.profiles.active=${activeProfiles}"
-
-    if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
-        javaOpts += " -agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"
-    }
-
-    buildArgs(['JAR_FILE' : "${jar.archiveName}",
-               'JAVA_OPTS': javaOpts])
-}
+ext.libraries = [
+        jdbcH2      : 'com.h2database:h2',
+        jdbcPostgres: 'org.postgresql:postgresql',
+        db_support  : ["org.springframework:spring-jdbc",
+                       "com.zaxxer:HikariCP"],
+        db_init     : 'org.liquibase:liquibase-core',
+        test        : 'org.springframework.boot:spring-boot-starter-test'
+]
 
 pmd {
     ignoreFailures = true

@@ -1,1 +1,6 @@
 rootProject.name = 'yada'
+include 'auth'
+include 'user-management'
+include 'todo'
+include 'infra'
+

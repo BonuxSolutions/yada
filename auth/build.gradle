@@ -1,0 +1,27 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins {
+    id 'org.springframework.boot' version '2.0.2.RELEASE'
+}
+
+apply plugin: 'idea'
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'io.spring.dependency-management'
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+dependencies {
+    compile libraries.db_support
+    runtime libraries.jdbcPostgres
+    runtime libraries.jdbcH2
+    compile('org.springframework.boot:spring-boot-starter-security')
+    compileOnly('org.springframework.boot:spring-boot-starter-web')
+
+    testCompile('org.springframework.security:spring-security-test')
+}
