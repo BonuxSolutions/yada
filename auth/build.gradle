@@ -6,7 +6,11 @@ buildscript {
 
 plugins {
     id 'org.springframework.boot' version '2.0.2.RELEASE'
+    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+    id 'java-library'
 }
+
+javaModule.name = 'bonux.yada.auth'
 
 apply plugin: 'idea'
 apply plugin: 'java'
@@ -16,12 +20,15 @@ apply plugin: 'io.spring.dependency-management'
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
 
+group = 'bonux.yada'
+version = '0.0.1-SNAPSHOT'
+
 dependencies {
     compile libraries.db_support
     runtime libraries.jdbcPostgres
     runtime libraries.jdbcH2
     compile('org.springframework.boot:spring-boot-starter-security')
-    compileOnly('org.springframework.boot:spring-boot-starter-web')
+    compile('org.springframework.boot:spring-boot-starter-web')
 
     testCompile('org.springframework.security:spring-security-test')
 }

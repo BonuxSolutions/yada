@@ -8,6 +8,12 @@ buildscript {
     }
 }
 
+plugins {
+    id 'org.springframework.boot' version '2.0.2.RELEASE'
+    id 'org.gradle.java.experimental-jigsaw' version '0.1.1'
+    id 'application'
+}
+
 apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'eclipse'
@@ -15,10 +21,17 @@ apply plugin: 'org.springframework.boot'
 apply plugin: 'io.spring.dependency-management'
 apply plugin: "org.sonarqube"
 
+javaModule.name = 'bonux.yada.todo'
+
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
 
+group = 'bonux.yada'
+version = '0.0.1-SNAPSHOT'
+
 dependencies {
+    compile project (':auth')
+
     compile('org.springframework.boot:spring-boot-starter-actuator')
     compile('org.springframework.boot:spring-boot-starter-aop')
     compile('org.springframework.boot:spring-boot-starter-hateoas')
