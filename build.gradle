@@ -105,12 +105,6 @@ subprojects {
                     classpath = files()
                 }
             }
-
-            bootJar {
-                manifest {
-                    attributes 'Start-Class': 'bonux.yada.YadaApplication'
-                }
-            }
         }
     }
 }

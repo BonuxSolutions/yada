@@ -2,13 +2,10 @@ buildscript {
     repositories {
         mavenCentral()
     }
-    dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-    }
 }
 
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
+plugins { id "io.spring.dependency-management" version "1.0.5.RELEASE" }
+
 apply plugin: 'java-library'
 
 sourceCompatibility = 1.10
@@ -25,4 +22,8 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-web')
 
     testImplementation('org.springframework.security:spring-security-test')
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
 }

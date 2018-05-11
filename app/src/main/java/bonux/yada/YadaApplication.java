@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-@EntityScan(basePackageClasses = {YadaApplication.class})
+@EntityScan({"bonux.yada", "bonux.yada.auth"})
 @SpringBootApplication
 @EnableTransactionManagement
 @EnableWebSecurity
