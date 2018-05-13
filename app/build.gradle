@@ -47,6 +47,10 @@ dependencies {
 
 ext.activeProfiles = project.getProperties().get("spring.profiles.active")
 
+jar {
+    archivesBaseName = "yada"
+}
+
 run {
     doFirst {
         jvmArgs = [
