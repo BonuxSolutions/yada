@@ -26,6 +26,7 @@ ext.moduleName = 'bonux.yada'
 dependencies {
     implementation project(':auth')
     implementation project(':todo')
+    implementation project(':user-management')
 
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-aop')

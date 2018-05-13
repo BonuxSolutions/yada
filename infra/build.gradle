@@ -6,7 +6,7 @@ buildscript {
     }
 
     dependencies {
-        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
+        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:0.19.2"
     }
 }
 
@@ -17,15 +17,15 @@ String activeProfiles = project.getProperties().get("spring.profiles.active")
 docker {
     dockerfile = file("Dockerfile")
     name "${project.group}/yada"
-    files("/tmp", file("run.sh"))
+    files("src/main/resources", file("run.sh"))
     noCache true
 
-    def javaOpts = "-Dspring.profiles.active=${activeProfiles}"
+    String javaOpts = "-Dspring.profiles.active=${activeProfiles}"
 
     if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
         javaOpts += " -agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"
     }
 
-    buildArgs(['JAR_FILE' : "yada.jar",
+    buildArgs(['JAR_FILE' : "../app/build/libs/app-${project(':app').version}",
                'JAVA_OPTS': javaOpts])
 }

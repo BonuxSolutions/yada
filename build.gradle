@@ -5,7 +5,6 @@ group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
 ext.springBootVersion = '2.0.2.RELEASE'
-ext.dockerPluginVersion = '0.19.2'
 ext.sonarqubePluginVersion = '2.6.2'
 ext.checkstyleVersion = '8.9'
 ext.sevntuChecksVersion = '1.29.0'
