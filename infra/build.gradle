@@ -11,9 +11,11 @@ if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
 
 docker {
     Project p = project(':app')
+
     dockerfile = file("src/main/resources/Dockerfile")
     name "${p.group}/${p.jar.baseName}"
-    files(p.jar.archivePath, file("src/main/resources/run.sh"))
+    files(p.jar.archivePath,
+            file("src/main/resources/run.sh"))
     noCache true
     pull true
     tags 'latest'
