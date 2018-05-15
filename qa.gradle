@@ -6,13 +6,15 @@ repositories {
     mavenCentral()
 }
 
-ext{
+ext {
     checkstyleVersion = '8.10'
     sevntuChecksVersion = '1.29.0'
     sonarqubePluginVersion = '2.6.2'
+    pmdVersion = '6.3.0'
 }
 
 pmd {
+    toolVersion = pmdVersion
     ignoreFailures = true
     sourceSets = [sourceSets.main]
     reportsDir = file("$project.buildDir/reports/pmd")
@@ -35,6 +37,10 @@ pmd {
             'java-unnecessary',
             'java-unusedcode'
     ]
+
+    dependencies{
+        pmd "net.sourceforge.pmd:pmd-java:${pmdVersion}"
+    }
 }
 
 checkstyle {
