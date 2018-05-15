@@ -7,6 +7,7 @@ buildscript {
 plugins { id "io.spring.dependency-management" version "1.0.5.RELEASE" }
 
 apply plugin: 'java-library'
+apply from: qa
 
 sourceCompatibility = 1.10
 targetCompatibility = 1.10
