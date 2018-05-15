@@ -1,22 +1,29 @@
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
+buildscript {
+    repositories {
+        maven {
+            url "https://plugins.gradle.org/m2/"
+        }
+    }
+    dependencies {
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
+    }
+}
 
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
-ext.springBootVersion = '2.0.2.RELEASE'
-ext.sonarqubePluginVersion = '2.6.2'
-ext.checkstyleVersion = '8.9'
-ext.sevntuChecksVersion = '1.29.0'
+ext {
+    springBootVersion = '2.0.2.RELEASE'
 
-ext.libraries = [
-        jdbcH2      : 'com.h2database:h2',
-        jdbcPostgres: 'org.postgresql:postgresql',
-        db_support  : ["org.springframework:spring-jdbc",
-                       "com.zaxxer:HikariCP"],
-        db_init     : 'org.liquibase:liquibase-core',
-        test        : 'org.springframework.boot:spring-boot-starter-test'
-]
+    libraries = [
+            jdbcH2      : 'com.h2database:h2',
+            jdbcPostgres: 'org.postgresql:postgresql',
+            db_support  : ["org.springframework:spring-jdbc",
+                           "com.zaxxer:HikariCP"],
+            db_init     : 'org.liquibase:liquibase-core',
+            test        : 'org.springframework.boot:spring-boot-starter-test']
+    qa = file('qa.gradle').absolutePath
+}
 
 gradle.taskGraph.beforeTask { Task task ->
     println "executing $task ..."
@@ -25,8 +32,7 @@ gradle.taskGraph.beforeTask { Task task ->
 gradle.taskGraph.afterTask { Task task, TaskState state ->
     if (state.failure) {
         println "FAILED"
-    }
-    else {
+    } else {
         println "done"
     }
 }
@@ -34,41 +40,6 @@ gradle.taskGraph.afterTask { Task task, TaskState state ->
 allprojects {
     repositories {
         mavenCentral()
-    }
-}
-
-pmd {
-    ignoreFailures = true
-    sourceSets = [sourceSets.main]
-    reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSets = [
-            'java-basic',
-            'java-braces',
-            'java-clone',
-            'java-codesize',
-            'java-comments',
-            'java-controversial',
-            'java-coupling',
-            'java-design',
-            'java-empty',
-            'java-finalizers',
-            'java-imports',
-            'java-optimizations',
-            'java-strictexception',
-            'java-strings',
-            'java-typeresolution',
-            'java-unnecessary',
-            'java-unusedcode'
-    ]
-}
-
-checkstyle {
-    ignoreFailures = true
-    configFile = file("${project.rootDir}/checkstyle.xml")
-
-    dependencies {
-        checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
-        checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
     }
 }
 
