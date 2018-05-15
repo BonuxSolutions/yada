@@ -1,0 +1,29 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins { id "io.spring.dependency-management" version "1.0.5.RELEASE" }
+
+apply plugin: 'java-library'
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+group = 'bonux.yada'
+version = '0.0.1-SNAPSHOT'
+
+ext.moduleName = 'bonux.yada.auth'
+
+dependencies {
+    implementation libraries.db_support
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+
+    testImplementation('org.springframework.security:spring-security-test')
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}
