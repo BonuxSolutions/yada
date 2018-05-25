@@ -1,0 +1,29 @@
+plugins {
+    id 'com.palantir.docker' version '0.19.2'
+}
+
+String activeProfiles = project.getProperties().get("spring.profiles.active")
+String javaOpts = activeProfiles == null ? "" : "-Dspring.profiles.active=${activeProfiles} "
+
+if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
+    javaOpts += "-agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"
+}
+
+docker {
+    Project p = project(':app')
+
+    dockerfile = file("src/main/resources/Dockerfile")
+    name "${p.group}/${p.jar.baseName}"
+    files(p.jar.archivePath,
+            file("src/main/resources/run.sh"))
+    noCache true
+    pull true
+    tags 'latest'
+    buildArgs([JAR_FILE     : "${p.jar.archiveName}",
+               BUILD_VERSION: "${p.version}",
+               JAVA_OPTS    : "${javaOpts}"])
+}
+
+task clean {
+    file('build').deleteDir()
+}

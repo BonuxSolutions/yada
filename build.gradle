@@ -1,130 +1,90 @@
 buildscript {
-    ext {
-        springBootVersion = '2.0.1.RELEASE'
-        dockerPluginVersion = '0.13.0'
-        sonarqubePluginVersion = '2.6.2'
-    }
     repositories {
-        mavenCentral()
         maven {
             url "https://plugins.gradle.org/m2/"
         }
     }
     dependencies {
-        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
-        classpath "gradle.plugin.com.palantir.gradle.docker:gradle-docker:${dockerPluginVersion}"
-        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:${sonarqubePluginVersion}"
+        classpath "org.sonarsource.scanner.gradle:sonarqube-gradle-plugin:2.6.2"
     }
 }
-
-plugins {
-    id 'org.springframework.boot' version '2.0.1.RELEASE'
-}
-
-apply plugin: 'idea'
-apply plugin: 'java'
-apply plugin: 'eclipse'
-apply plugin: 'org.springframework.boot'
-apply plugin: 'io.spring.dependency-management'
-apply plugin: 'com.palantir.docker'
-apply plugin: 'checkstyle'
-apply plugin: 'pmd'
-apply plugin: "org.sonarqube"
 
 group = 'bonux.yada'
 version = '0.0.1-SNAPSHOT'
 
-sourceCompatibility = 1.10
-targetCompatibility = 1.10
+ext {
+    springBootVersion = '2.0.2.RELEASE'
 
-repositories {
-    mavenCentral()
+    libraries = [
+            jdbcH2      : 'com.h2database:h2',
+            jdbcPostgres: 'org.postgresql:postgresql',
+            db_support  : ["org.springframework:spring-jdbc",
+                           "com.zaxxer:HikariCP"],
+            db_init     : 'org.liquibase:liquibase-core',
+            test        : 'org.springframework.boot:spring-boot-starter-test']
+    qa = file('qa.gradle').absolutePath
 }
 
-dependencies {
-    compile('org.springframework.boot:spring-boot-starter-actuator')
-    compile('org.springframework.boot:spring-boot-starter-aop')
-    compile('org.springframework.boot:spring-boot-starter-data-jpa')
-    compile('org.springframework.boot:spring-boot-starter-hateoas')
-    compile('org.springframework.boot:spring-boot-starter-jersey')
-    compile('org.springframework.boot:spring-boot-starter-quartz')
-    compile('org.springframework.boot:spring-boot-starter-security')
-    compile('org.springframework.boot:spring-boot-starter-web')
-    compile('org.liquibase:liquibase-core')
-    compile('org.springframework.data:spring-data-rest-hal-browser')
-    compile('org.springframework.session:spring-session-core')
-
-    compile('javax.xml.bind:jaxb-api')
-
-    runtime('org.springframework.boot:spring-boot-devtools')
-    runtime('com.h2database:h2')
-    runtime('org.postgresql:postgresql')
-
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
-    testCompile('org.springframework.boot:spring-boot-starter-test')
-    testCompile('org.springframework.security:spring-security-test')
+gradle.taskGraph.beforeTask { Task task ->
+    println "executing $task ..."
 }
 
-String activeProfiles = project.getProperties().get("spring.profiles.active")
-
-bootRun {
-    if (activeProfiles != null) {
-        systemProperties = [
-                'spring.profiles.active': activeProfiles
-        ]
+gradle.taskGraph.afterTask { Task task, TaskState state ->
+    if (state.failure) {
+        println "FAILED"
+    } else {
+        println "done"
     }
 }
 
-docker {
-    dockerfile = file("src/infra/Dockerfile")
-    name "${project.group}/${jar.baseName}"
-    files(jar.archivePath, file("src/infra/run.sh"))
-    noCache true
-
-    def javaOpts = "-Dspring.profiles.active=${activeProfiles}"
-
-    if (activeProfiles == null || activeProfiles.indexOf("prod") == 0) {
-        javaOpts += " -agentlib:jdwp=transport=dt_socket,address=9009,server=y,suspend=n"
+allprojects {
+    repositories {
+        mavenCentral()
     }
-
-    buildArgs(['JAR_FILE' : "${jar.archiveName}",
-               'JAVA_OPTS': javaOpts])
 }
 
-pmd {
-    ignoreFailures = true
-    sourceSets = [sourceSets.main]
-    reportsDir = file("$project.buildDir/reports/pmd")
-    ruleSets = [
-            'java-basic',
-            'java-braces',
-            'java-clone',
-            'java-codesize',
-            'java-comments',
-            'java-controversial',
-            'java-coupling',
-            'java-design',
-            'java-empty',
-            'java-finalizers',
-            'java-imports',
-            'java-optimizations',
-            'java-strictexception',
-            'java-strings',
-            'java-typeresolution',
-            'java-unnecessary',
-            'java-unusedcode'
-    ]
-}
+subprojects {
+    afterEvaluate { Project project1 ->
+        if (project1 != project(':infra')) {
+            repositories {
+                jcenter()
+            }
 
-checkstyle {
-    ignoreFailures = true
-    configFile = file("${project.rootDir}/checkstyle.xml")
+            compileJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                    ]
+                    classpath = files()
+                }
+            }
 
-    project.ext.checkstyleVersion = '8.9'
-    project.ext.sevntuChecksVersion = '1.29.0'
+            compileTestJava {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    options.compilerArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'junit',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.srcDirs).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
 
-    dependencies {
-        checkstyle "com.puppycrawl.tools:checkstyle:${checkstyleVersion}"
-        checkstyle "com.github.sevntu-checkstyle:sevntu-checks:${sevntuChecksVersion}"
+            test {
+                inputs.property("moduleName", moduleName)
+                doFirst {
+                    jvmArgs = [
+                            '--module-path', classpath.asPath,
+                            '--add-modules', 'ALL-MODULE-PATH',
+                            '--add-reads', "$moduleName=junit",
+                            '--patch-module', "$moduleName=" + files(sourceSets.test.java.outputDir).asPath,
+                    ]
+                    classpath = files()
+                }
+            }
+        }
     }
 }

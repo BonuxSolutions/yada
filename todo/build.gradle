@@ -1,0 +1,35 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+}
+
+plugins { id "io.spring.dependency-management" version "1.0.5.RELEASE" }
+
+apply plugin: 'java-library'
+apply from: qa
+
+ext.moduleName = 'bonux.yada.todo'
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+group = 'bonux.yada'
+version = '0.0.1-SNAPSHOT'
+
+dependencies {
+    implementation project (':auth')
+
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
+    implementation('org.springframework.boot:spring-boot-starter-jersey') {
+        exclude group: 'org.glassfish.hk2.external'
+    }
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+
+    implementation libraries.db_support
+}
+
+dependencyManagement {
+    imports { mavenBom("org.springframework.boot:spring-boot-dependencies:${springBootVersion}") }
+}

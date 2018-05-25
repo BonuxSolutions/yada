@@ -1,0 +1,4 @@
+yada:
+    datasource:
+        initialization-mode: never
+        jdbcUrl: "jdbc:postgresql://database:5432/postgres"

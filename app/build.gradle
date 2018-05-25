@@ -1,0 +1,67 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}"
+    }
+}
+
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+apply plugin: 'application'
+apply from: qa
+
+mainClassName = "bonux.yada.YadaApplication"
+
+sourceCompatibility = 1.10
+targetCompatibility = 1.10
+
+group = 'bonux.yada'
+version = '0.0.1-SNAPSHOT'
+
+ext.moduleName = 'bonux.yada'
+
+dependencies {
+    implementation project(':auth')
+    implementation project(':todo')
+    implementation project(':user-management')
+
+    implementation('org.springframework.boot:spring-boot-starter-actuator')
+    implementation('org.springframework.boot:spring-boot-starter-aop')
+    implementation('org.springframework.boot:spring-boot-starter-hateoas')
+    implementation('org.springframework.boot:spring-boot-starter-jersey') {
+        exclude group: 'org.glassfish.hk2.external'
+    }
+    implementation('org.springframework.boot:spring-boot-starter-quartz')
+    implementation('org.springframework.boot:spring-boot-starter-web')
+    implementation('org.springframework.boot:spring-boot-starter-security')
+    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+
+    implementation libraries.db_support
+    runtime libraries.jdbcPostgres
+    runtime libraries.jdbcH2
+    implementation libraries.db_init
+}
+
+ext.activeProfiles = project.getProperties().get("spring.profiles.active")
+
+jar {
+    archivesBaseName = "yada"
+}
+
+run {
+    doFirst {
+        jvmArgs = [
+                '--module-path', classpath.asPath,
+                '--module', 'bonux.yada.YadaApplication'
+        ]
+        classpath = files()
+    }
+}
+
+bootJar {
+    manifest {
+        attributes 'Start-Class': 'bonux.yada.YadaApplication'
+    }
+}

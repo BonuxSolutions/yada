@@ -71,3 +71,5 @@ atlassian-ide-plugin.xml
 
 !gradle-wrapper.jar
 !sonar-java-plugin-5.3.0.13828.jar
+
+gradle.properties

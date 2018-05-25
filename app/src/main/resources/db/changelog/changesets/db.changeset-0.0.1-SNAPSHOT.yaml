@@ -1,0 +1,100 @@
+databaseChangeLog:
+- changeSet:
+    id: 1
+    author: retriku
+    changes:
+      - createSequence:
+          sequenceName: todo_id_seq
+          startValue: 1
+          cycle: true
+          incrementBy: 1
+      - createTable:
+          tableName: todo
+          columns:
+            - column:
+                name: id
+                type: integer
+                constraints:
+                  primaryKey: true
+            - column:
+                name: task
+                type: text
+                constraints:
+                  nullable: false
+            - column:
+                name: task_state
+                type: varchar(10)
+                constraints:
+                  check:
+                  nullable: false
+            - column:
+                name: close_reason
+                type: varchar(10)
+            - column:
+                name: task_start
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: task_end
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: created_by
+                type: varchar(100)
+                constraints:
+                  nullable: false
+            - column:
+                name: updated
+                type: datetime
+                constraints:
+                  nullable: false
+            - column:
+                name: updated_by
+                type: varchar(100)
+                constraints:
+                  nullable: false
+            - column:
+                name: version
+                type: integer
+                constraints:
+                  nullable: false
+      - createTable:
+          tableName: users
+          columns:
+            - column:
+                name: username
+                type: varchar(50)
+                constraints:
+                  primaryKey: true
+            - column:
+                name: password
+                type: varchar(100)
+                constraints:
+                  nullable: false
+            - column:
+                name: enabled
+                type: boolean
+                constraints:
+                  nullable: false
+      - createTable:
+          tableName: authorities
+          columns:
+            - column:
+                name: username
+                type: varchar(50)
+            - column:
+                name: authority
+                type: varchar(10)
+      - sql: ALTER TABLE todo ADD CONSTRAINT task_state_c CHECK (task_state IN ('NEW','OPEN','CLOSED'))
+      - sql: ALTER TABLE todo ADD CONSTRAINT close_reason_c CHECK (close_reason IS NULL OR close_reason IN ('DONE','ABANDONED'))
+      - sql: INSERT INTO users(username, password, enabled) VALUES ('admin', '{bcrypt}$2a$10$MnZDwbB4dpc1jV3vnReEOO2jUMRfOCr/2zgo5vrLsOSTWe.EGQc1S', true)
+      - sql: INSERT INTO users(username, password, enabled) VALUES ('user', '{bcrypt}$2a$10$d1UcNp6F1azkyfgeLdq3ueQyVOrDNxgvSAXdv57RcHjgcMftiDPhu', true)
+      - sql: INSERT INTO authorities(username, authority) VALUES ('admin', 'ADMIN')
+      - sql: INSERT INTO authorities(username, authority) VALUES ('user', 'USER')
