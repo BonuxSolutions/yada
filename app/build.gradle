@@ -22,6 +22,12 @@ version = '0.0.1-SNAPSHOT'
 
 ext.moduleName = 'bonux.yada'
 
+configurations.all {
+    exclude group: 'org.glassfish.hk2.external'
+    exclude group: 'com.vaadin.external.google', module: 'android-json'
+    exclude group: 'org.hamcrest', module: 'hamcrest-library'
+}
+
 dependencies {
     implementation project(':auth')
     implementation project(':todo')
@@ -30,18 +36,20 @@ dependencies {
     implementation('org.springframework.boot:spring-boot-starter-actuator')
     implementation('org.springframework.boot:spring-boot-starter-aop')
     implementation('org.springframework.boot:spring-boot-starter-hateoas')
-    implementation('org.springframework.boot:spring-boot-starter-jersey') {
-        exclude group: 'org.glassfish.hk2.external'
-    }
+    implementation('org.springframework.boot:spring-boot-starter-jersey')
     implementation('org.springframework.boot:spring-boot-starter-quartz')
     implementation('org.springframework.boot:spring-boot-starter-web')
     implementation('org.springframework.boot:spring-boot-starter-security')
-    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
 
     implementation libraries.db_support
+    implementation libraries.db_init
+
+    annotationProcessor('org.springframework.boot:spring-boot-configuration-processor')
+
+    testImplementation('org.springframework.boot:spring-boot-starter-test')
+
     runtime libraries.jdbcPostgres
     runtime libraries.jdbcH2
-    implementation libraries.db_init
 }
 
 ext.activeProfiles = project.getProperties().get("spring.profiles.active")
