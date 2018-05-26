@@ -14,6 +14,7 @@ version = '0.0.1-SNAPSHOT'
 
 ext {
     springBootVersion = '2.0.2.RELEASE'
+    cucumberVersion = '3.0.1'
 
     libraries = [
             jdbcH2      : 'com.h2database:h2',
@@ -21,7 +22,11 @@ ext {
             db_support  : ["org.springframework:spring-jdbc",
                            "com.zaxxer:HikariCP"],
             db_init     : 'org.liquibase:liquibase-core',
-            test        : 'org.springframework.boot:spring-boot-starter-test']
+            test        : 'org.springframework.boot:spring-boot-starter-test',
+            cucumber    : ["io.cucumber:cucumber-spring:$cucumberVersion",
+                           "io.cucumber:cucumber-java8:$cucumberVersion",
+                           "io.cucumber:cucumber-junit:$cucumberVersion"]
+    ]
     qa = file('qa.gradle').absolutePath
 }
 

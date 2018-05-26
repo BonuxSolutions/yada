@@ -9,6 +9,8 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.factory.PasswordEncoderFactories;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -25,6 +27,8 @@ public class YadaSpringContextIntegrationTest {
     @Autowired
     private UserDetailsService userDetailsService;
 
+    private PasswordEncoder passwordEncoder = PasswordEncoderFactories.createDelegatingPasswordEncoder();
+
     @Test
     public void testSpringContext() {
         assertNotNull(applicationContext);
@@ -32,9 +36,16 @@ public class YadaSpringContextIntegrationTest {
 
     @Test
     public void testUserDetailsService() {
-        var user = userDetailsService.loadUserByUsername("admin");
-        var authorities = new ArrayList<>(user.getAuthorities());
-        assertEquals("admin", user.getUsername());
+        var admin = userDetailsService.loadUserByUsername("admin");
+        var user = userDetailsService.loadUserByUsername("user");
+        var authorities = new ArrayList<>(admin.getAuthorities());
+
+        assertEquals("admin", admin.getUsername());
+        assertEquals("user", user.getUsername());
+
         assertTrue(authorities.stream().anyMatch(p -> p.getAuthority().equals(Roles.ADMIN.toString())));
+
+        assertTrue(passwordEncoder.matches("admin", admin.getPassword()));
+        assertTrue(passwordEncoder.matches("user", user.getPassword()));
     }
 }

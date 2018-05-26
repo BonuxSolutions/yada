@@ -14,4 +14,6 @@ module bonux.yada {
     requires spring.boot.test.autoconfigure;
     requires spring.boot.test;
     requires junit;
+    requires cucumber.junit;
+    requires cucumber.core;
 }
